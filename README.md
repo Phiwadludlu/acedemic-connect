@@ -1,4 +1,4 @@
-# QRClass-Pro
+# Acedemic Connect
 Hello guys this is the flask mvc project structure we are going to be using. 
 
 ## First initialization 
