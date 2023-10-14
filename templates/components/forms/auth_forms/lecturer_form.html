@@ -1,0 +1,36 @@
+{% extends 'auth/register.html' %}
+
+{% block form %}
+
+<div class="d-flex flex-column align-items-center">
+    <div class="d-flex gap-3 mb-2">
+        <a role="button" href="{{url_for('core_routes.student_sign_up')}}" class="btn btn-outline-secondary rounded-pill"
+            data-user="student">Student</a>
+        <a role="button" href="{{url_for('core_routes.lecturer_sign_up')}}"
+            class="btn btn-green text-white rounded-pill" data-user="lecturer">Lecturer</a>
+    </div>
+</div>
+<form id="lecturer" action="{{ url_for('core_routes.lecturer_sign_up') }}" method="post" name="register_user_form"
+    class="container mx-auto px-3">
+    {{ register_lecturer_form.csrf_token}}
+    {{ render_form_errors(register_lecturer_form) }}
+
+    {{ render_field_with_errors(register_lecturer_form.email, class="form-control col-lg-4 col-md-4 col-sm-8 ",
+    placeholder="Email") }}
+    {{ render_field_with_errors(register_lecturer_form.staff_number, class="form-control col-lg-4 col-sm-8 ",
+    placeholder="Staff Number") }}
+
+    {{ render_field_with_errors(register_lecturer_form.password, class="form-control col-lg-4 col-sm-8 ",
+    placeholder="Password") }}
+    {% if register_lecturer_form.password_confirm %}
+    {{ render_field_with_errors(register_lecturer_form.password_confirm, class="form-control col-lg-4 col-sm-8
+    ", placeholder="Confirm Password") }}
+    {% endif %}
+    <div class="row">
+        <div class="d-flex justify-content-center">
+            {{ render_field(register_lecturer_form.submit, class = "btn btn-green text-light", style = "width: 42vh;")
+            }}
+        </div>
+    </div>
+</form>
+{% endblock %}
