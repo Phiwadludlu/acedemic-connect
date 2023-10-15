@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}{% endblock %}
+{% import "macros/__navbar__.html" as nav %}
+
+{% block content %}
+{% if current_user.is_authenticated %}
+
+    {% include "components/navbar/student-navbar.html" %}
+    {%else %}
+    {% include "components/navbar/no-auth-navbar.html" %}
+{% endif %}
+
+
+<div class="container-lg px-4 h-100">
+    <div class="d-flex flex-column gap-5">
+        <div class="d-flex flex-column align-items-center mt-5">
+            <div class="row justify-content-center">
+                <div class="col-8 d-flex justify-content-center ">
+                <img src="/static/images/logo.jpg" />
+                    </div>
+                <p class="fs-2 fw-bold text-center">
+                    Booking made easy!
+                </p>
+
+            <div class="row">
+                <p class="fw-lighter text-center">Book consultation sessions with your lecturer or supervisor easily.</p>
+            </div>
+        </div>
+               </div>
+        <div class="row">
+            <div class="d-flex justify-content-center">
+                <a role="button" href="/login" class="btn btn-green text-light" style="width: 50vh;">
+                    Set a meeting with your supervisor!
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

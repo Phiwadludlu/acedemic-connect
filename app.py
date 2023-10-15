@@ -5,6 +5,9 @@ from flask import Flask
 from forms.auth_forms.sign_up_form import StudentRegisterForm
 from routes.core_route import core_route
 from models import db,User,Role
+from routes.lectuer_routes import lecturer_route
+from routes.student_routes import student_route
+
 
 def create_app():
     app = Flask(__name__)
@@ -30,6 +33,8 @@ security.init_app(app=app,register_blueprint=False)
 #Route Registrations here
 
 app.register_blueprint(core_route, url_prefix = '/')
+app.register_blueprint(student_route,url_prefix = '/student')
+app.register_blueprint(lecturer_route, url_prefix = '/lecturer')
 
 
 if __name__ == '__main__':

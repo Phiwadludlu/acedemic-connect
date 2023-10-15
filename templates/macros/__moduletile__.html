@@ -1,0 +1,13 @@
+{% macro self(name='', time='', status='') -%}
+<div class="card w-100 px-0">
+    <div class="card-body d-flex bg-secondary-subtle">
+        <div class="col">
+            <span class="card-title fs-5">{{ name }}</span>
+            <p class="card-text">{{ status }}</p>
+        </div>
+        <div class="col-4 d-flex align-items-center justify-content-end">
+            <p class="fw-normal mb-0">{{ time }}</p>
+        </div>
+    </div>
+</div>
+{%- endmacro %}

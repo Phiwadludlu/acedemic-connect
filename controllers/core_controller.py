@@ -6,8 +6,9 @@ from flask_security import hash_password, anonymous_user_required, auth_required
 from forms.auth_forms.sign_up_form import StudentRegisterForm, LecturerRegisterForm
 from models import Student, User, Role, db, Lecturer
 from utils.create_db_tables import  create_tables
+@anonymous_user_required
 def index():
-    return "Welcome to Acedemic Connect"
+    return render_template("views/LandingpageView.html")
 
 def create_db_tables():
 
@@ -84,7 +85,7 @@ def proxy_redirect():
 
     if current_user.has_role('student'):
 
-        return redirect(url_for("students.StudentMain"))
+        return redirect(url_for("student_route.index"))
 
     elif current_user.has_role('lecturer'):
 

@@ -1,16 +1,7 @@
 {% extends "base.html" %}
 {% from "security/_macros.html" import render_field_with_errors, render_field, render_form_errors %}
 {% block content %}
-<style>
-        .btn-green{
-            background-color:rgb(95,201,169) ;
-        }
 
-        .btn-green:hover{
-            background-color:rgb(82,173,146) ;
-        }
-
-    </style>
 <div class="d-flex align-items-center h-100">
     <div class="container-lg">
         {% include "security/_messages.html" %}
@@ -27,7 +18,7 @@
         <div class="d-flex flex-column">{%block form %} {% endblock %}</div>
         <div class="d-flex align-items-center justify-content-center gap-2">
             <p class="fw-medium mb-0">Have an account?</p>
-            <a class="text-secondary fw-medium link-underline link-underline-opacity-0" href="/login">Login</a>
+            <a class="fw-medium link-underline link-underline-opacity-0" href="/login">Login</a>
         </div>
     </div>
 </div>

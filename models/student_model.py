@@ -18,4 +18,12 @@ class Student(db.Model):
     #Relationship with User model
     user = db.relationship("User", back_populates="student")
 
+    #Relationship with appointment
+
+    appointment = db.relationship("Appointment", back_populates="student")
+
+    #Relationship with qualification
+
+    qualifications = relationship('Qualification', secondary='qualification_period',
+                                  backref=backref('students', lazy="dynamic"))
 

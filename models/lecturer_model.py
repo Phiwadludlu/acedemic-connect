@@ -18,3 +18,14 @@ class Lecturer(db.Model):
     # Define the back-reference to User
     user = db.relationship('User', back_populates='lecturer')
 
+    #Relationship with module
+
+    module = db.relationship('Module', back_populates="lecturer")
+
+    #Relationship with appointment
+
+    appointment = db.relationship('Appointment', back_populates="lecturer")
+
+    #Relationship with timeslot
+
+    timeslot = db.relationship("TimeSlot", back_populates="lecturer")
