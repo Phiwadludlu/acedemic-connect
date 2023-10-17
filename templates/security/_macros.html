@@ -1,0 +1,44 @@
+{% macro render_field_with_errors(field) %}
+<div class="row justify-content-center"> 
+  <div class="form-group mb-3 col-md-6 col-sm-8 col-lg-4" id="{{ field.id|default('fs-field') }}">
+
+    {{ field(**kwargs)|safe }}
+    {% if field.errors %}
+
+    {% for error in field.errors %}<div class=""  style="color: red;">{{ error }}</div>{% endfor %}
+
+    {% endif %}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro render_field(field) %}
+<div class="row" id="{{ field.id|default('fs-field') }}">{{ field(**kwargs)|safe }}</div>
+{% endmacro %}
+
+{% macro render_field_errors(field) %}
+<div class="fs-div" id="{{ field.id if field else 'fs-field' }}">
+  {% if field and field.errors %}
+  <ul>
+    {% for error in field.errors %}<li class="fs-error-msg"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+      <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+    </svg> {{ error }}</li>{% endfor %}
+  </ul>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{# render WTForms (>3.0) form level errors #}
+{% macro render_form_errors(form) %}
+{% if form.form_errors %}
+<div class="fs-div" id="fs-form-errors">
+  <ul>
+    {% for error in form.form_errors %}<li class="fs-error-msg">{{ error }}</li>{% endfor %}
+  </ul>
+</div>
+{% endif %}
+{% endmacro %}
+
+{% macro prop_next() -%}
+{% if 'next' in request.args %}?next={{ request.args.next|urlencode }}{% endif %}
+{%- endmacro %}

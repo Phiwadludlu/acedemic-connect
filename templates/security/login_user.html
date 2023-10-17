@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% from "security/_macros.html" import render_field_with_errors, render_field, render_field_errors, render_form_errors,
+prop_next %}
+
+{% block content %}
+    <style>
+        .btn-green{
+            background-color:rgb(95,201,169) ;
+        }
+
+        .btn-green:hover{
+            background-color:rgb(82,173,146) ;
+        }
+
+    </style>
+<div class="toast-container toast-container position-fixed bottom-0 end-0 p-3">
+  {% include "security/_messages.html" %}
+</div>
+<div class="d-flex align-items-center h-100">
+  <div class="container-lg">
+    <div class="d-flex flex-column align-items-center">
+        <img src="/static/images/logo.jpg" alt="logo" />
+      <p class="fs-3 fw-medium">Sign In</p>
+      <p class="fs-6 fw-lighter text-center">
+        Sign in using your institutions credentials
+      </p>
+      <div class="d-md-none d-flex justify-content-center w-100 mb-2">
+        <div class="border border-secondary border-1 w-50"></div>
+      </div>
+    </div>
+    <form action="{{ url_for_security('login') }}{{ prop_next() }}" method="post" name="login_user_form">
+      <div class="d-flex flex-column">
+        {{ login_user_form.hidden_tag() }}
+        {{ render_form_errors(login_user_form) }}
+
+        {% if "email" in identity_attributes %}
+
+        {{ render_field_with_errors(login_user_form.email, class="form-control
+        col-lg-4 col-sm-8",
+        placeholder="Email") }}
+
+        {% endif %}
+
+        {% if login_user_form.username and "username" in identity_attributes %}
+
+        {% if "email" in identity_attributes %}{% endif %}
+        {{ render_field_with_errors(login_user_form.username, class="form-control col-lg-4 col-sm-8") }}
+
+        {% endif %}
+
+        {{ render_field_with_errors(login_user_form.password, class="form-control col-lg-4 col-sm-8",
+        placeholder="Password") }}
+        <div class="row">
+          <div class="d-flex justify-content-center">
+            {{ render_field_errors(login_user_form.csrf_token) }}
+            {{ render_field(login_user_form.submit, class = "btn btn-green text-light ", style="width: 43vh;") }}
+          </div>
+        </div>
+      </div>
+    </form>
+    {% if security.webauthn %}
+    <hr class="fs-gap">
+    <h2>{{ _fsdomain("Use WebAuthn to Sign In") }}</h2>
+    <div>
+      <form method="get" id="wan_signin_form" name="wan_signin_form">
+        <input id="wan_signin" name="wan_signin" type="submit" value="{{ _fsdomain('Sign in with WebAuthn') }}"
+          formaction="{{ url_for_security('wan_signin') }}{{ prop_next() }}">
+      </form>
+    </div>
+    {% endif %}
+    {% if security.oauthglue %}
+    <hr class="fs-gap">
+    <h2>{{ _fsdomain("Use Social Oauth to Sign In") }}</h2>
+    {% for provider in security.oauthglue.provider_names %}
+    <div class="fs-gap">
+      <form method="post" id="{{ provider }}_form" name="{{ provider }}_form">
+        <input id="{{ provider }}" name="{{ provider }}" type="submit" value="{{ _fsdomain('Sign in with ')~provider }}"
+          formaction="{{ url_for_security('oauthstart', name=provider) }}{{ prop_next() }}">
+        {% if csrf_token is defined %}
+        <input id="{{ provider }}_csrf_token" name="{{ provider }}_csrf_token" type="hidden" value="{{ csrf_token() }}">
+        {% endif %}
+      </form>
+    </div>
+    {% endfor %}
+    {% endif %}
+    <div class="d-flex align-items-center justify-content-center gap-2">
+      <p class="fw-medium mb-0">Don't have an account? </p>
+      <a class="text-secondary fw-medium link-underline link-underline-opacity-0" href="/register">Sign Up</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+  const toastLiveList = document.querySelectorAll('div.toast');
+
+  if (toastLiveList.length > 0) {
+    toastLiveList.forEach((toast, index) => {
+      const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast);
+
+      // Initially hide all the toasts
+      toastBootstrap.hide();
+
+      // Calculate the delay for showing each toast based on its position (index)
+      const delay = (index + 1) * 300; // 2000 milliseconds (2 seconds) delay for each toast
+
+      // Use setTimeout to show each toast after the specified delay
+      setTimeout(() => {
+        toastBootstrap.show(); // Show the toast
+      }, delay);
+    });
+  }
+</script>
+{% endblock %}
