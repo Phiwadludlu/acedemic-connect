@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %} | Book an appointment {% endblock title %}
+<!--TODO-->
+
+{% block content %}
+<div class="container-lg">
+    <div class="d-flex flex-row pt-2">
+        <a href="{{ url_for('core_routes.proxy_redirect') }}" role="button"
+            class="btn bg-transparent rounded border border-0">
+            <span class="material-symbols-outlined">
+                arrow_back_ios_new
+            </span>
+        </a>
+        <div class="col d-block pe-3 me-3">
+            <p class="fs-3 fw-medium mb-0 text-center">
+                Schedule appointment
+            </p>
+            <div class="d-md-none d-flex justify-content-center w-100">
+                <div class="border border-secondary border-1 w-50 mt-1"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-3" style="height: 100vh;">
+        <div class="d-flex flex-column gap-3">
+            <div class="row">
+                <label for="bookStudentNumber" class="form-label">Student number</label>
+                <input type="text" class="form-control" id="bookStudentNumber">
+            </div>
+            <div class="row">
+                <p class="fw-medium">
+                    Student name
+                </p>
+                <p class="fw-lighter">
+                    Student name from db based on input student number
+                </p>
+            </div>
+            <div class="row">
+                <p class="fw-medium">
+                    Qualification
+                </p>
+                <p class="fw-lighter">
+                    Student name from db based on input student number
+                </p>
+            </div>
+            <div class="row">
+                <label for="bookSelectModule" class="form-label fw-medium">Module</label>
+                <select id="bookSelectModule" class="form-select" aria-label="Book Module">
+                    <option selected>Choose new module</option>
+                    <option value="PRJB301">PRJB301 - PROJECT B III</option>
+                    <option value="SFEN301">SFEN301 - SOFTWARE ENGINEERING III</option>
+                </select>
+            </div>
+            <div class="row">
+                <label for="bookSelectTimeslot" class="form-label fw-medium">Timeslot</label>
+                <select id="bookSelectTimeslot" class="form-select" aria-label="Book timeslot">
+                    <option selected>Choose new timeslot</option>
+                    <option value="11:00-11:30">11:00-11:30</option>
+                    <option value="14:30-15:00">14:00-14:30</option>
+                </select>
+            </div>
+            <div class="row">
+                <label for="bookAppointmentReason" class="form-label fw-medium">Reason for appointment</label>
+                <textarea class="form-control" id="bookAppointmentReason" rows="3"></textarea>
+            </div>
+            <div class="row">
+                <a role="button" class="btn bg-success-subtle rounded">
+                    Book
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

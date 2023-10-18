@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %} | Appointment {% endblock title %}
+<!--TODO-->
+
+{% block content %}
+<div class="container-lg">
+    <div class="d-flex flex-row pt-2">
+        <a href="{{ url_for('core_routes.proxy_redirect') }}" role="button"
+            class="btn bg-transparent rounded border border-0">
+            <span class="material-symbols-outlined">
+                arrow_back_ios_new
+            </span>
+        </a>
+        <div class="col d-block pe-3 me-3">
+            <p class="fs-3 fw-medium mb-0 text-center">
+                Appointment
+            </p>
+            <div class="d-md-none d-flex justify-content-center w-100">
+                <div class="border border-secondary border-1 w-50 mt-1"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-3" style="height: 100vh;">
+        <div class="d-flex flex-column">
+            <div class="row">
+                <p class="fw-medium">
+                    Student number
+                </p>
+                <p class="fw-lighter">
+                    Student number
+                </p>
+            </div>
+            <div class="row">
+                <p class="fw-medium">
+                    Student name
+                </p>
+                <p class="fw-lighter">
+                    Student name
+                </p>
+            </div>
+            <div class="row">
+                <p class="fw-medium">
+                    Qualification
+                </p>
+                <p class="fw-lighter">
+                    Qualification
+                </p>
+            </div>
+            <div class="row">
+                <p class="fw-medium">
+                    Module
+                </p>
+                <p class="fw-lighter">
+                    Module
+                </p>
+            </div>
+            <div class="row">
+                <p class="fw-medium">
+                    Time
+                </p>
+                <p class="fw-lighter">
+                    Timeslot
+                </p>
+            </div>
+            <div class="row">
+                <p class="fw-medium">
+                    Reason for appointment
+                </p>
+                <p class="fw-lighter">
+                    Reason for appointment
+                </p>
+            </div>
+        </div>
+        {% if type == 'pending' %}
+        <div class="d-flex flex-column gap-3">
+            <div class="row">
+                <a role="button" class="btn bg-success-subtle rounded">
+                    Accept
+                </a>
+            </div>
+            <div class="row">
+                <a role="button" class="btn border-success-subtle rounded">
+                    Decline
+                </a>
+            </div>
+            <div class="row">
+                <a role="button" href="/appointment/{{appointment_uuid}}/reschedule" class="btn border-success-subtle rounded">
+                    Reschedule
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

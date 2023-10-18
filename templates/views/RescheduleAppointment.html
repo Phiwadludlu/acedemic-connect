@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %} | Reschedule approval {% endblock title %}
+<!--TODO-->
+
+{% block content %}
+<div class="container-lg">
+    <div class="d-flex flex-row pt-2">
+        <a href="{{ url_for('core_routes.proxy_redirect') }}" role="button"
+            class="btn bg-transparent rounded border border-0">
+            <span class="material-symbols-outlined">
+                arrow_back_ios_new
+            </span>
+        </a>
+        <div class="col d-block pe-3 me-3">
+            <p class="fs-3 fw-medium mb-0 text-center">
+                Reschedule
+            </p>
+            <div class="d-md-none d-flex justify-content-center w-100">
+                <div class="border border-secondary border-1 w-50 mt-1"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-3" style="height: 100vh;">
+        <div class="d-flex flex-column gap-3">
+            <div class="row">
+                <p class="fw-medium">
+                    Old appointment details
+                </p>
+                <p class="fw-lighter">
+                    Old appointment details
+                </p>
+            </div>
+            <div class="row">
+                <p class="fw-medium">
+                    New appointment details
+                </p>
+                <label for="selectNewDate" class="form-label fw-medium">Date</label>
+                <input class="form-control" type="date" />
+                <label for="selectNewTimeslot" class="form-label fw-medium">New timeslot</label>
+                <select id="selectNewTimeslot" class="form-select" aria-label="New timeslot">
+                    <option selected>Choose new timeslot</option>
+                    <option value="11:00-11:30">11:00-11:30</option>
+                    <option value="14:30-15:00">14:00-14:30</option>
+                </select>
+            </div>
+            <div class="row">
+                <label for="rescheduleReason" class="form-label fw-medium">Reason for reschedule</label>
+                <textarea class="form-control" id="rescheduleReason" rows="3"></textarea>
+            </div>
+            <div class="row">
+                <a role="button" class="btn bg-success-subtle rounded">
+                    Reschedule
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

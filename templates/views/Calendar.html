@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %} | Calender {% endblock title %}
+<!--TODO-->
+
+{% block content %}
+<div class="container-lg">
+    <div class="d-flex flex-row pt-2">
+        <a href="{{ url_for('core_routes.proxy_redirect') }}" role="button" class="btn bg-transparent rounded border border-0">
+            <span class="material-symbols-outlined">
+                arrow_back_ios_new
+            </span>
+        </a>
+        <div class="col d-block pe-3 me-3">
+            <p class="fs-3 fw-medium mb-0 text-center">
+                Calender
+            </p>
+            <div class="d-md-none d-flex justify-content-center w-100">
+                <div class="border border-secondary border-1 w-50 mt-1"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-3" style="height: 100vh;"></div>
+</div>
+{% endblock %}

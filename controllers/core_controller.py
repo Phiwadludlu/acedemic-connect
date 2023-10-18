@@ -89,4 +89,27 @@ def proxy_redirect():
 
     elif current_user.has_role('lecturer'):
 
-        return redirect(url_for("lecturers.lecturerMain"))
+        return redirect(url_for("lecturer_route.index"))
+
+@auth_required()
+def calendar():
+    #Reschudule approval
+    return render_template("views/Calendar.html")
+
+@auth_required()
+def notifications():
+    #Notifications
+    return render_template("views/Notifications.html")
+
+@auth_required()
+def single_appointment(appointment_uuid):
+    # TODO: Determine the view to render based on appointment details
+    #       If approval_status == Reschedule, show reschedule view
+    #       else show appointment details as normal
+    _type = request.args.get('type')
+
+    return render_template("views/Appointment.html", type=_type, appointment_uuid=appointment_uuid)
+
+@auth_required()
+def reschedule_appointment(appointment_uuid):
+    return render_template("views/RescheduleAppointment.html")

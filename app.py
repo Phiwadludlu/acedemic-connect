@@ -5,7 +5,7 @@ from flask import Flask
 from forms.auth_forms.sign_up_form import StudentRegisterForm
 from routes.core_route import core_route
 from models import db,User,Role
-from routes.lectuer_routes import lecturer_route
+from routes.lecturer_routes import lecturer_route
 from routes.student_routes import student_route
 
 

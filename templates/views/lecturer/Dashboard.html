@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %} Student Dashboard {% endblock %}
+{% block content %}
+{% include "components/navbar/student-navbar.html" %}
+<!--Menu-->
+<div class="container bg-green d-flex justify-content-start">
+    <div class="row">
+        <div class="col">
+            <div class="container my-3">
+                <a class="text-white text-center text-decoration-none my-3"
+                    href="{{url_for('core_routes.calendar')}}"><span
+                        class="d-flex material-symbols-outlined fs-1 justify-content-center align-items-center">
+                        calendar_month
+                    </span>
+                    Calender
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    {% block partial %}{% endblock %}
+</div>
+
+
+{% endblock content %}

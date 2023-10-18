@@ -8,7 +8,6 @@ import controllers.student_controller as sc
 
 student_route = Blueprint('student_route',__name__)
 
-
-student_route.add_url_rule('/','index',sc.index, methods=['GET'])
+student_route.add_url_rule('','index',sc.index, methods=['GET'])
 
 student_route.add_url_rule('/appointment/new', 'book', sc.book_appointment,methods=['GET', 'POST'])

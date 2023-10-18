@@ -1,0 +1,18 @@
+{% macro self(data, type, datetime) -%}
+<a role="button" class="d-flex row link-underline link-underline-opacity-0 link-success" href="appointment/{{ data.appointment_uuid }}?type={{type}}">
+    <div class=" col-3 ">
+        <span class="fw-medium text-center fs-2  mb-0">{{ data.day_of_month }}</span>
+        <div class="row mt-0 p-0">
+            <div class="col">{{ data.day_of_week }}</div>
+        </div>
+    </div>
+    <div class="col-9">
+        <span class="fs-4 mb-0 fw-medium">{{ data.student_name }}</span>
+        <div class="row mt-0 p-0">
+            <div class="col">
+                <p class="fw-lighter">{{ datetime.fromisoformat(data.appointment_datetime).strftime("%A, %I:%M%p") }}</p>
+            </div>
+        </div>
+    </div>
+</a>
+{%- endmacro %}
