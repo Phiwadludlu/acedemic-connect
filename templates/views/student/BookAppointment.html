@@ -23,17 +23,22 @@
     <div class="container mt-3" style="height: 100vh;">
         <div class="d-flex flex-column gap-3">
             <div class="row">
-                <label for="bookStudentNumber" class="form-label">Student number</label>
-                <input type="text" class="form-control" id="bookStudentNumber">
+                <p class="fw-medium">
+                    Student number
+                </p>
+                <p class="fw-lighter">
+                    {{ current_user.student.student_number }}
+                </p>
             </div>
             <div class="row">
                 <p class="fw-medium">
                     Student name
                 </p>
                 <p class="fw-lighter">
-                    Student name from db based on input student number
+                    {{ current_user.student.student_fullname}}
                 </p>
             </div>
+            <!--
             <div class="row">
                 <p class="fw-medium">
                     Qualification
@@ -42,6 +47,7 @@
                     Student name from db based on input student number
                 </p>
             </div>
+            -->
             <div class="row">
                 <label for="bookSelectModule" class="form-label fw-medium">Module</label>
                 <select id="bookSelectModule" class="form-select" aria-label="Book Module">
@@ -49,6 +55,10 @@
                     <option value="PRJB301">PRJB301 - PROJECT B III</option>
                     <option value="SFEN301">SFEN301 - SOFTWARE ENGINEERING III</option>
                 </select>
+            </div>
+            <div class="row">
+                <label for="bookSelectDate" class="form-label fw-medium">Date</label>
+                <input class="form-control" type="date" id="bookSelectDate" />
             </div>
             <div class="row">
                 <label for="bookSelectTimeslot" class="form-label fw-medium">Timeslot</label>
@@ -63,11 +73,48 @@
                 <textarea class="form-control" id="bookAppointmentReason" rows="3"></textarea>
             </div>
             <div class="row">
-                <a role="button" class="btn bg-success-subtle rounded">
+                <a role="button" class="btn bg-success-subtle rounded" id="bookSubmit">
                     Book
                 </a>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+{% block script%}
+<script>
+    const collect_submit = document.getElementById('bookSubmit');
+    collect_submit.addEventListener('click', () => {
+        const appointment_module = document.getElementById("bookSelectModule");
+        const appointment_timeslot = document.getElementById("bookSelectTimeslot");
+        const appointment_reason = document.getElementById("bookAppointmentReason");
+        const appointment_date = document.getElementById("bookSelectDate");
+
+        const form_data = { appointment_module: appointment_module.value, appointment_timeslot: appointment_timeslot.value, appointment_reason: appointment_reason.value, appointment_date : appointment_date.value};
+        console.log(form_data)
+        const endpoint = "/v1/api/schedule_appoinment";
+        const requestOptions = {
+            method: 'POST' ,
+            headers: {
+                'Content-Type' : 'application/json'
+            },
+            body: JSON.stringify(form_data)
+        };
+
+        fetch(endpoint, requestOptions)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('There was a problem', error);
+        })
+    });
+
+</script>
 {% endblock %}

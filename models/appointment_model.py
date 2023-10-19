@@ -17,6 +17,8 @@ class Appointment(db.Model):
     lecturer_id = db.Column(db.Integer(),db.ForeignKey("lecturers.id"))
     student_id = db.Column(db.Integer(), db.ForeignKey("students.id"))
     timeslot_id = db.Column(db.Integer(), db.ForeignKey("timeslot.id"))
+    module_id = db.Column(db.Integer(), db.ForeignKey("module.id"))
+
 
 
     #Relationship with lecturer

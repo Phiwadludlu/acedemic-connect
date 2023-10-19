@@ -4,7 +4,8 @@
 {% block content %}
 {% include "components/navbar/student-navbar.html" %}
 <!--Menu-->
-<div class="container bg-green d-flex justify-content-start">
+{% if False %}
+<!--<div class="container bg-green d-flex justify-content-start">
     <div class="row">
         <div class="col">
             <div class="container my-3">
@@ -18,7 +19,8 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
+{% endif %}
 <div class="container">
     {% block partial %}{% endblock %}
 </div>

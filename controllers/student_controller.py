@@ -1,6 +1,7 @@
-from flask import request, render_template
+from flask import request, redirect, render_template
 from services.test_db import appointments
 from datetime import datetime
+from flask_login import current_user
 
 def index():
     #Student Dashboard
@@ -14,8 +15,9 @@ def index():
         return render_template("views/student/partial/History.html", old_appointments=appointments(), datetime=datetime)
     elif tag.lower() == "pending":
         return render_template("views/student/partial/Pending.html", pending_appointments=appointments(), datetime=datetime)
-
+    else:
+        return redirect('/student?tag=Upcoming')
 def book_appointment():
     #Booking an appointment
-    return render_template("views/student/BookAppointment.html")
+    return render_template("views/student/BookAppointment.html", current_user=current_user)
 

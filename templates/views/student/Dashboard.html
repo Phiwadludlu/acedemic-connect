@@ -4,30 +4,6 @@
 {% block content %}
 {% include "components/navbar/student-navbar.html" %}
 <!--Menu-->
-<div class="container-lg bg-green d-flex justify-content-start rounded">
-    <div class="row">
-        <div class="col">
-            <div class="container my-3">
-                <a class="text-white text-center text-decoration-none my-3" href="{{url_for('student_route.book')}}">
-                    <span class="d-flex material-symbols-outlined fs-1 justify-content-center align-items-center">
-                        calendar_add_on
-                    </span>
-                    <div>Schedule</div>
-                </a>
-            </div>
-        </div>
-        <div class="col">
-            <div class="container my-3">
-                <a class="text-white text-center text-decoration-none my-3" href="{{url_for('core_routes.calendar')}}"><span
-                        class="d-flex material-symbols-outlined fs-1 justify-content-center align-items-center">
-                        calendar_month
-                    </span>
-                    <div>Calender</div>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
 <div class="container">
     {% block partial %}{% endblock %}
 </div>

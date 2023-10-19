@@ -9,6 +9,7 @@ class Student(db.Model):
 
     id = db.Column(db.Integer(), primary_key=True)
     student_number = db.Column(db.String(255), unique=True)
+    student_fullname = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.now)
     modified_at = db.Column(db.DateTime, default=datetime.now)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))

@@ -7,6 +7,7 @@ from routes.core_route import core_route
 from models import db,User,Role
 from routes.lecturer_routes import lecturer_route
 from routes.student_routes import student_route
+from routes.api_route import api_route
 
 
 def create_app():
@@ -35,6 +36,8 @@ security.init_app(app=app,register_blueprint=False)
 app.register_blueprint(core_route, url_prefix = '/')
 app.register_blueprint(student_route,url_prefix = '/student')
 app.register_blueprint(lecturer_route, url_prefix = '/lecturer')
+app.register_blueprint(api_route, url_prefix = '/v1/api')
+
 
 
 if __name__ == '__main__':
