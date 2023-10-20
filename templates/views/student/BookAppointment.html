@@ -52,8 +52,9 @@
                 <label for="bookSelectModule" class="form-label fw-medium">Module</label>
                 <select id="bookSelectModule" class="form-select" aria-label="Book Module">
                     <option selected>Choose new module</option>
-                    <option value="PRJB301">PRJB301 - PROJECT B III</option>
-                    <option value="SFEN301">SFEN301 - SOFTWARE ENGINEERING III</option>
+                    {% for option in module_options %}
+                    <option value="{{ option.code }}">{{ option.code }} - {{ option.name }}</option>
+                    {% endfor %}
                 </select>
             </div>
             <div class="row">
@@ -63,9 +64,9 @@
             <div class="row">
                 <label for="bookSelectTimeslot" class="form-label fw-medium">Timeslot</label>
                 <select id="bookSelectTimeslot" class="form-select" aria-label="Book timeslot">
-                    <option selected>Choose new timeslot</option>
-                    <option value="11:00-11:30">11:00-11:30</option>
-                    <option value="14:30-15:00">14:00-14:30</option>
+                    <option selected>Choose new module</option>
+                    
+                    <option value="{{ option.slot_id }}">{{ option.slot_label }}</option>
                 </select>
             </div>
             <div class="row">
@@ -84,6 +85,12 @@
 {% block script%}
 <script>
     const collect_submit = document.getElementById('bookSubmit');
+
+    const appointment_module = document.getElementById("bookSelectModule");
+    // send a fetch api POST request to get days the selected module is availble 
+    const appointment_date = document.getElementById("bookSelectDate");
+    const appointment_timeslot = document.getElementById("bookSelectTimeslot");
+
     collect_submit.addEventListener('click', () => {
         const appointment_module = document.getElementById("bookSelectModule");
         const appointment_timeslot = document.getElementById("bookSelectTimeslot");

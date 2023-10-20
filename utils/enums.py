@@ -5,6 +5,7 @@ class ApprovalStatusChoices(enum.Enum):
     APPROVED = 'Approved'
     DECLINED = 'Declined'
     RESCHEDULED = 'Rescheduled'
+    PENDING = 'Pending'
 
 
 class AttendanceChoices (enum.Enum):
