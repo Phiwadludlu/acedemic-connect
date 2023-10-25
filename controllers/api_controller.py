@@ -1,11 +1,12 @@
 import json 
 from flask import request, jsonify
-from models import db, Appointment, Module, TimeSlot
+from models import db, Appointment, Module, TimeSlot, RescheduledApproval, Student, Lecturer
 from datetime import datetime
 from utils.enums import ApprovalStatusChoices,AttendanceChoices
 from flask_login import current_user
 from services.api_service import format_timeslot_data, format_module_data
 from flask_security import auth_required
+from sqlalchemy import and_
 
 @auth_required()
 def schedule_appointment():
@@ -28,6 +29,104 @@ def schedule_appointment():
     except:
         return jsonify({"code" : -1}), 500
 
+
+
+def fetch_appoinments():
+    all_appoinments = db.session.query(Appointment).all()
+    #return format_module_data(all_appoinments), 200
+    
+def get_appoinment_by_approval_status():
+    req_data = request.data
+    form_data = json.loads(req_data)
+    
+    if 'approval_status' in form_data:
+        status = form_data['approval_status']
+        filtered_appointments = Appointment.query.filter_by(approval_status=status).all()
+        
+def get_appointments_by_lecture_id():
+    req_data = request.data
+    form_data = json.loads(req_data)
+    
+    if 'lecture_id' in form_data:
+        lecture_id = form_data['lecture_id']
+        appointments = Appointment.query.filter_by(lecture_id = lecture_id).all()
+        
+def get_appointments_by_student_id():
+    req_data = request.data
+    form_data = json.loads(req_data)
+    
+    if 'student_id' in form_data:
+        student_id = form_data['student_id']
+        appointments = Appointment.query.filter_by(student_id = student_id).all()
+    
+def get_appoinments_by_module_code():
+    req_data = request.data
+    form_data = json.loads(req_data)
+    
+    if 'module_code' in form_data:
+        module_code = form_data['module_code']
+        module_record = Module.query.filter(Module.code == module_code).first()
+        appointments = Appointment.query.filter(module_record.id == Appointment.module_id).all()
+        
+def get_appointments_by_attendance_status():
+    req_data = request.data
+    form_data = json.loads(req_data)
+
+    if 'attendance_status' in form_data:
+        status = form_data['attendance_status']
+        appointments = Appointment.query.filter_by(attendance_status =status).all()
+    
+
 def fetch_modules():
     all_modules = db.session.query(Module).all()
-    return format_module_data(all_modules), 200
+    return format_module_data(all_modules), 200  
+
+
+def get_single_module_by_module_code(module_code):
+    module = Module.query.filter(Module.code==module_code).first()
+    
+def get_modules_by_lecture_id():
+    req_data = request.data
+    form_data = json.loads(req_data)
+
+    if 'lecture_id' in form_data:
+        lecture_id = form_data['lecture_id']
+        all_module = Module.query.filter(Module.lecture_id == lecture_id).all()
+    
+def get_reschedule_approval_by_student_number():
+    req_data = request.data
+    form_data = json.load(req_data)
+
+    if "student_number" in form_data:
+        student_number = form_data["student_number"]
+        student = Student.query.filter(Student.student_number == student_number).first()
+        student_appointments_needing_approval = Appointment.query.filter(and_(Appointment.student_id == student.id, Appointment.approval_status==ApprovalStatusChoices.PENDING))
+        
+def get_reschedule_approval_by_staff_number():
+    req_data = request.data
+    form_data = json.load(req_data)
+    
+    if "staff_number" in form_data:
+        staff_number = form_data["staff_number"]
+        lecturer = Lecturer.query.filter(Lecturer.staff_number == staff_number).first()
+        lecturer_appointments_needing_approval = Appointment.query.filter(and_(Appointment.lecturer_id == lecturer.id, Appointment.approval_status==ApprovalStatusChoices.PENDING))
+
+def get_timeslot_by_day():
+    req_data = request.data
+    form_data = json.loads(req_data)
+
+    if 'day' in form_data:
+        day = form_data['day']
+        timeslots = TimeSlot.query.filter(TimeSlot.day == day).all()
+        
+def get_timeslot_by_staff_number():
+    req_data = request.data
+    form_data = json.loads(req_data)
+    
+    if 'staff_number' in form_data:
+        staff_number = form_data['staff_number']
+        lecturer = Lecturer.query.filter(Lecturer.staff_number == staff_number).first()
+        timeslots = TimeSlot.query.filter(TimeSlot.lecture_id == lecturer.id).all()
+    
+def get_all_timeslots():
+    timeslots = TimeSlot.query.all()
