@@ -19,7 +19,7 @@
     {% import "macros/__appointment_tile__.html" as appointment_tile %}
   
     {% for appointment in upcoming_appointments %}
-        {{ appointment_tile.self(appointment, 'view', datetime) }}
+        {{ appointment_tile.self(appointment) }}
     {% endfor %}
   
 </div>

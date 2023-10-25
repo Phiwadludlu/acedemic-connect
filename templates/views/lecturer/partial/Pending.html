@@ -13,7 +13,7 @@
     {% import "macros/__appointment_tile__.html" as appointment_tile %}
     
     {% for appointment in pending_appointments %}
-        {{ appointment_tile.self(appointment, 'pending', datetime) }}
+        {{ appointment_tile.self(appointment) }}
     {% endfor %}
 </div>
 {% endblock %}

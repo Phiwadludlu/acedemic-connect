@@ -115,8 +115,9 @@ def single_appointment(appointment_uuid):
     student = db.session.query(Student).filter( Student.id == appointment.student_id).first()
     timeslot = db.session.query(TimeSlot).filter( TimeSlot.id == appointment.timeslot_id).first()
     appointment_collection = (appointment, module, student, timeslot)
-    api
-    return render_template("views/Appointment.html", appointment=appointment, current_user=current_user)
+    
+    appointment_data = api_s.format_single_appointment_data(appointment_collection)
+    return render_template("views/Appointment.html", appointment=appointment_data, current_user=current_user)
 
 @auth_required()
 def reschedule_appointment(appointment_uuid):

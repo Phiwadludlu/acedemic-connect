@@ -27,15 +27,7 @@
                     Student number
                 </p>
                 <p class="fw-lighter">
-                    {{ appointment.student_id }}
-                </p>
-            </div>
-            <div class="row">
-                <p class="fw-medium">
-                    Student name
-                </p>
-                <p class="fw-lighter">
-                    {{ appointment.student_id }}
+                    {{ appointment.student_number }}
                 </p>
             </div>
             <div class="row">
@@ -43,7 +35,7 @@
                     Module
                 </p>
                 <p class="fw-lighter">
-                    {{ appointment.module_id }}
+                    {{ appointment.module_name }}
                 </p>
             </div>
             <div class="row">
@@ -51,7 +43,7 @@
                     Time
                 </p>
                 <p class="fw-lighter">
-                    {{ appointment.timeslot_id }}
+                    {{ appointment.appointment_timeslot }}
                 </p>
             </div>
             <div class="row">
@@ -63,7 +55,7 @@
                 </p>
             </div>
         </div>
-        {% if appointment.approval_status == 'Pending' %}
+        {% if (appointment.approval_status == 'Pending' and current_user.roles[0].name == 'lecturer') %}
         <div class="d-flex flex-column gap-3">
             <div class="row">
                 <a role="button" class="btn bg-success-subtle rounded">
@@ -75,9 +67,9 @@
                     Decline
                 </a>
             </div>
-            {% if current_user.roles.name == 'lecturer' %}
+            {% if current_user.roles[0].name == 'lecturer' %}
             <div class="row">
-                <a role="button" href="/appointment/{{appointment_uuid}}/reschedule" class="btn border-success-subtle rounded">
+                <a role="button" href="/appointment/{{appointment.appointment_uuid}}/reschedule" class="btn border-success-subtle rounded">
                     Reschedule
                 </a>
             </div>

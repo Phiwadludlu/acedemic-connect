@@ -1,4 +1,5 @@
 from flask import jsonify
+from datetime import datetime
 
 def format_timeslot_data(timeslots):
     tmp = []
@@ -53,9 +54,23 @@ def format_single_appointment_data(data):
     schema = {
             "appointment_uuid" : appointment.appointment_uuid,
             "student_number" : student.student_number,
-            "student_fullname" : student.student_fullname,
             "module_name" : module.name,
             "appointment_timeslot" : timeslot.start_time.isoformat(timespec='minutes') + "-" + timeslot.end_time.isoformat(timespec='minutes'),
             "appointment_reason" : appointment.appointment_reason,
+            "approval_status" : appointment.approval_status.value,
         }
-    return jsonify(schema)
+    return schema
+
+def format_appointments_tile_data(data):
+    result = []
+    for item in data:
+        appointment, student, timeslot = item
+        schema = {
+                "appointment_uuid" : appointment.appointment_uuid,
+                "student_fullname" : student.student_number,
+                "day_of_week" : appointment.date.strftime("%A"),
+                "day_of_month": appointment.date.day,
+                "day_time" : appointment.date.strftime("%A") + ", " + timeslot.start_time.strftime("%I:%M %p"),
+            }
+        result.append(schema)
+    return result
