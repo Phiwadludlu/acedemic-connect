@@ -58,12 +58,12 @@
         {% if (appointment.approval_status == 'Pending' and current_user.roles[0].name == 'lecturer') %}
         <div class="d-flex flex-column gap-3">
             <div class="row">
-                <a role="button" class="btn bg-success-subtle rounded">
+                <a href="/appointment/approve/{{appointment.appointment_uuid}}" role="button" class="btn bg-success-subtle rounded">
                     Accept
                 </a>
             </div>
             <div class="row">
-                <a role="button" class="btn border-success-subtle rounded">
+                <a href="/appointment/decline/{{appointment.appointment_uuid}}" role="button" class="btn border-success-subtle rounded">
                     Decline
                 </a>
             </div>
@@ -79,3 +79,5 @@
     </div>
 </div>
 {% endblock %}
+
+{}

@@ -5,9 +5,11 @@ from flask_security import hash_password, anonymous_user_required, auth_required
 
 from forms.auth_forms.sign_up_form import StudentRegisterForm, LecturerRegisterForm
 from models import Student, User, Role, db, Lecturer, Appointment, Module, TimeSlot
+from utils.enums import ApprovalStatusChoices, AttendanceChoices
 from utils.create_db_tables import  create_tables
 from flask_login import current_user
 from services import api_service as api_s
+from sqlalchemy import and_
 
 @anonymous_user_required
 def index():
@@ -119,6 +121,23 @@ def single_appointment(appointment_uuid):
     appointment_data = api_s.format_single_appointment_data(appointment_collection)
     return render_template("views/Appointment.html", appointment=appointment_data, current_user=current_user)
 
-@auth_required()
 def reschedule_appointment(appointment_uuid):
-    return render_template("views/RescheduleAppointment.html")
+    appointment = db.session.query(Appointment, Module, Student, TimeSlot).filter(and_(Appointment.module_id == Module.id, Student.id == Appointment.student_id, Appointment.timeslot_id == TimeSlot.id, Appointment.appointment_uuid == appointment_uuid)).first()
+    return render_template("views/RescheduleAppointment.html", appointment=api_s.format_single_appointment_data(appointment))
+
+def approve_appointment(appointment_uuid):
+    appointment = Appointment.query.filter(Appointment.appointment_uuid == appointment_uuid).first()
+    appointment.approval_status = ApprovalStatusChoices.APPROVED
+    db.session.add(appointment)
+    db.session.commit()
+
+    return redirect('/appointment/%s' % (appointment_uuid))
+
+def decline_appointment(appointment_uuid):
+    appointment = Appointment.query.filter(Appointment.appointment_uuid == appointment_uuid).first()
+    appointment.approval_status = ApprovalStatusChoices.DECLINED
+    appointment.attendance_status = AttendanceChoices.MISSED
+    db.session.add(appointment)
+    db.session.commit()
+
+    return redirect('/appointment/%s' % (appointment_uuid))

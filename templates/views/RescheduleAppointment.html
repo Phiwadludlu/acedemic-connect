@@ -26,22 +26,28 @@
                 <p class="fw-medium">
                     Old appointment details
                 </p>
-                <p class="fw-lighter">
-                    Old appointment details
-                </p>
+                <div class="row">
+                    <p class="fw-medium">
+                        Time
+                    </p>
+                    <p class="fw-lighter">
+                        {{ appointment.appointment_timeslot }}
+                    </p>
+                </div>
+                <div class="row">
+                    <p class="fw-medium">
+                        Reason for appointment
+                    </p>
+                    <p class="fw-lighter">
+                        {{ appointment.appointment_reason }}
+                    </p>
+                </div>
             </div>
             <div class="row">
                 <p class="fw-medium">
                     New appointment details
                 </p>
-                <label for="selectNewDate" class="form-label fw-medium">Date</label>
-                <input class="form-control" type="date" id="selectNewDate" />
-                <label for="selectNewTimeslot" class="form-label fw-medium">New timeslot</label>
-                <select id="selectNewTimeslot" class="form-select" aria-label="New timeslot">
-                    <option selected>Choose new timeslot</option>
-                    <option value="11:00-11:30">11:00-11:30</option>
-                    <option value="14:30-15:00">14:00-14:30</option>
-                </select>
+                <sessionpicker ref="sp" :module="selectedModule"></sessionpicker>
             </div>
             <div class="row">
                 <label for="rescheduleReason" class="form-label fw-medium">Reason for reschedule</label>

@@ -14,23 +14,24 @@ def schedule_appointment():
     req_data = request.data
     form_data = json.loads(req_data)
     
-    appointment_module = form_data["appointment_module"]
+    appointment_module = form_data["appointment_module_code"]
     appointment_reason = form_data["appointment_reason"]
     appointment_date = form_data["appointment_date"]
-    appointment_timeslot = form_data["appointment_timeslot"]
+    appointment_timeslot = form_data["appointment_timeslot_id"]
+    appointment_uuid = str(uuid.uuid1())
+
+    print(form_data)
 
     try:
         selected_module = db.session.query(Module).filter(Module.code == appointment_module).first()
         selected_timeslot = db.session.query(TimeSlot).filter(TimeSlot.id == appointment_timeslot).first()
-        new_appointment = Appointment(date=datetime.fromisoformat(appointment_date),appointment_reason=appointment_reason, approval_status=ApprovalStatusChoices.PENDING,   lecturer_id=selected_module.lecturer.id, student_id=current_user.student.id, module_id=selected_module.id, timeslot_id=selected_timeslot.id,    attendance_status=AttendanceChoices.PENDING)
-    
+        new_appointment = Appointment(date=datetime.fromisoformat(appointment_date),appointment_reason=appointment_reason, approval_status=ApprovalStatusChoices.PENDING,   lecturer_id=selected_module.lecturer.id, student_id=current_user.student.id, module_id=selected_module.id, timeslot_id=selected_timeslot.id,   attendance_status=AttendanceChoices.PENDING, appointment_uuid=appointment_uuid)
+
         db.session.add(new_appointment)
         db.session.commit()
         return jsonify({"code" : 1}), 200
     except:
         return jsonify({"code" : -1}), 500
-
-
 
 def fetch_student_appointments():
     all_appoinments = db.session.query(Appointment, Student, TimeSlot).filter(and_(Appointment.student_id == current_user.student.id, Appointment.timeslot_id == TimeSlot.id, Student.id == current_user.student.id))
@@ -39,7 +40,7 @@ def fetch_student_appointments():
 def fetch_lecturer_appointments():
     all_appoinments = db.session.query(Appointment, Student, TimeSlot).filter(and_(Appointment.lecturer_id == current_user.lecturer.id, Appointment.timeslot_id == TimeSlot.id))
     return all_appoinments
-    
+ 
 def get_appointment_by_approval_status():
     req_data = request.data
     form_data = json.loads(req_data)
@@ -153,11 +154,12 @@ def get_all_timeslots():
     return format_timeslot_data(timeslots), 200
 
 def get_timeslots_by_module():
+
     req_data = request.data
     form_data = json.loads(req_data)
     
     if 'module_code' in form_data:
         module_code = form_data['module_code']
         module = Module.query.filter(Module.code == module_code).first()
-        timeslots = TimeSlot.query.filter(TimeSlot.lecture_id == module.lecturer_id).all()
+        timeslots = TimeSlot.query.filter(TimeSlot.lecturer_id == module.lecturer_id).all()
         return format_timeslot_data(timeslots)
