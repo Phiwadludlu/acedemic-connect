@@ -11,7 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<link rel="shortcut icon" href="">
+    <link rel="shortcut icon" href="">
     <style>
         html,
         body {
@@ -21,26 +21,26 @@
             padding: 0px;
         }
 
-        .btn-green{
-            background-color:rgb(95,201,169) ;
+        .btn-green {
+            background-color: rgb(95, 201, 169);
         }
 
-        .btn-green:hover{
-            background-color:rgb(82,173,146) ;
+        .btn-green:hover {
+            background-color: rgb(82, 173, 146);
         }
 
-        .btn-outline-green{
-            border-color:rgb(95,201,169);
-            color:rgb(40, 40, 40);
+        .btn-outline-green {
+            border-color: rgb(95, 201, 169);
+            color: rgb(40, 40, 40);
         }
 
-        .btn-outline-green:hover{
-            background-color:rgb(111,235,197) ;
+        .btn-outline-green:hover {
+            background-color: rgb(111, 235, 197);
             color: white;
         }
 
-        .bg-green{
-            background-color:rgb(95,201,169) ;
+        .bg-green {
+            background-color: rgb(95, 201, 169);
         }
     </style>
     {% block style %}{% endblock %}
@@ -57,6 +57,63 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"
         integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa"
         crossorigin="anonymous"></script>
+    <template id="multiselect-template">
+        <div class="dropdown">
+            <div class="form-control d-flex align-items-center w-100"
+                :class="{ 'bg-body-secondary' : isDropdownDisabled }" :disabled="isDropdownDisabled">
+                <span class="material-symbols-outlined" style="pointer-events: none;">search</span>
+                <input type="text" class="form-control border border-0 shadow-none" :id="searchFieldId"
+                    placeholder="Search" @change="(e) => fetchSearch(e.target.value)" v-model="searchText" :disabled="isDropdownDisabled" />
+            </div>
+            <div class="dropdown-menu w-100" :class="{ 'show' : isDropdownOpen }">
+                <ul class="list-group list-group-flush" :id="dropdownId" v-if="isDropdownOpen">
+                    <li v-for="(item, index) in filteredItems" :key="index" class="list-group-item"
+                        v-if="filteredItems.length>0">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" :type="checkboxType" :value="item.code" :id="item.id"
+                                @click="handleDropdownClick(item.code)" v-model="currentTags">
+                            <label :for="item.id" class="form-check-label stretched-link">{{ '{{item.code}}' }} {{
+                                '{{item.name}}' }}</label>
+                        </div>
+                    </li>
+                    <li class="list-group-item" v-else>
+                        <p class='px-4 my-1 d-flex justify-content-center text-body-tertiary'>No match</p>
+                    </li>
+                </ul>
+
+            </div>
+            <!-- Add the tag list below the dropdown -->
+            <ul class="list-group list-group-horizontal gap-1 d-flex align-content-start flex-wrap mt-2">
+                <li class="list-group-item border border-0 p-0" v-for="tag in currentTags" :key="tag">
+                    <button type="button"
+                        class="btn btn-outline-secondary d-flex justify-content-center rounded-pill fs-6 p-2"
+                        @click="handleTagClick(tag)">
+                        {{ '{{ tag }}' }}
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </template>
+    <template id="session-template">
+        <div class="d-flex flex-column gap-3">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="bookSelectDate" class="form-label fw-lighter">Date</label>
+                    <input class="form-control" type="date" id="bookSelectDate" v-model="selectedDay" />
+                </div>
+                <div class="col-md-6">
+                    <label for="timeDropdown" class="form-label fw-lighter">Timeslot</label>
+                    <select class="form-select" id="timeDropdown" v-model="selectedTime"
+                        :disabled="timeOptions.length === 0">
+                        <option v-for="option in timeOptions" :key="option.value" :value="option.value">{{'{{
+                            option.label
+                            }}'}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </template>
     <!-- Bootstrap end.-->
     {% block script %}{% endblock %}
 </body>

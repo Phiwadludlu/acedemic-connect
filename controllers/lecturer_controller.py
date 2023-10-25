@@ -1,7 +1,9 @@
 from flask import request, render_template
 from services.test_db import appointments
 from datetime import datetime
+from flask_security.decorators import roles_required
 
+@roles_required('lecturer')
 def index():
     #Student Dashboard
     tag = request.args.get('tag')

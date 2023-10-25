@@ -3,6 +3,7 @@
 <!--TODO-->
 
 {% block content %}
+<div class="toast-container p-3 bottom-0 end-0" id="toast-area"></div>
 <div class="container-lg">
     <div class="d-flex flex-row pt-2">
         <a href="{{ url_for('core_routes.proxy_redirect') }}" role="button"
@@ -49,25 +50,15 @@
             </div>
             -->
             <div class="row">
-                <label for="bookSelectModule" class="form-label fw-medium">Module</label>
-                <select id="bookSelectModule" class="form-select" aria-label="Book Module">
-                    <option selected>Choose new module</option>
-                    {% for option in module_options %}
-                    <option value="{{ option.code }}">{{ option.code }} - {{ option.name }}</option>
-                    {% endfor %}
-                </select>
+                <p class="form-label fw-medium">Module</p>
+                <multiselect ref="ms" :search-field-id="'multiselect-searchfield'" :dropdown-id="'dropdown-items'"
+                    :items="moduleItems" :checkbox-type="'checkbox'" :limit="1" @open-dropdown="updateOpenDropdown"
+                    :is-dropdown-open="isDropdownOpen" @selected-module="updateSelectedModule">
+                </multiselect>
             </div>
             <div class="row">
-                <label for="bookSelectDate" class="form-label fw-medium">Date</label>
-                <input class="form-control" type="date" id="bookSelectDate" />
-            </div>
-            <div class="row">
-                <label for="bookSelectTimeslot" class="form-label fw-medium">Timeslot</label>
-                <select id="bookSelectTimeslot" class="form-select" aria-label="Book timeslot">
-                    <option selected>Choose new module</option>
-                    
-                    <option value="{{ option.slot_id }}">{{ option.slot_label }}</option>
-                </select>
+                <p class="form-label fw-medium">Timeslot</p>
+                <sessionpicker ref="sp" :module="selectedModule"></sessionpicker>
             </div>
             <div class="row">
                 <label for="bookAppointmentReason" class="form-label fw-medium">Reason for appointment</label>
@@ -83,44 +74,67 @@
 </div>
 {% endblock %}
 {% block script%}
+<script src="/static/custom.js" type="module"></script>
 <script>
     const collect_submit = document.getElementById('bookSubmit');
 
-    const appointment_module = document.getElementById("bookSelectModule");
-    // send a fetch api POST request to get days the selected module is availble 
-    const appointment_date = document.getElementById("bookSelectDate");
-    const appointment_timeslot = document.getElementById("bookSelectTimeslot");
+    const appendAlert = (message, type) => {
+        const wrapper = document.querySelector("div#toast-area");
+        wrapper.innerHTML = [
+            `<div class="toast align-items-center bg-${type} text-white position-relative border-0"
+                role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>`
+        ].join('');
+    };
+
+    window.$dev = {ms : app._instance};
 
     collect_submit.addEventListener('click', () => {
-        const appointment_module = document.getElementById("bookSelectModule");
-        const appointment_timeslot = document.getElementById("bookSelectTimeslot");
+        const appointment_module = app._instance.refs.ms.currentTags[0];
+        const appointment_timeslot = app._instance.refs.sp;
         const appointment_reason = document.getElementById("bookAppointmentReason");
         const appointment_date = document.getElementById("bookSelectDate");
-
-        const form_data = { appointment_module: appointment_module.value, appointment_timeslot: appointment_timeslot.value, appointment_reason: appointment_reason.value, appointment_date : appointment_date.value};
+        /*
+        const form_data = { appointment_module: appointment_module.value, appointment_timeslot: appointment_timeslot.value, appointment_reason: appointment_reason.value, appointment_date: appointment_date.value };
         console.log(form_data)
         const endpoint = "/v1/api/schedule_appoinment";
         const requestOptions = {
-            method: 'POST' ,
+            method: 'POST',
             headers: {
-                'Content-Type' : 'application/json'
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(form_data)
         };
 
         fetch(endpoint, requestOptions)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data);
-        })
-        .catch(error => {
-            console.error('There was a problem', error);
-        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (date.code === -1) {
+                    appendAlert(`Something went wrong. Try again later.`, 'warning');
+                    const toastItem = document.querySelector("div.toast");
+                    if (toastItem) {
+                        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastItem);
+                        toastBootstrap.show()
+                    };
+                } else if (data.code === 1) {
+                    window.location.assign("/student?tag=Upcoming")
+                }
+            })
+            .catch(error => {
+                console.error('There was a problem', error);
+            })*/
     });
 
 </script>

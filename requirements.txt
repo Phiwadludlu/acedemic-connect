@@ -10,3 +10,4 @@ python-dotenv
 flask-migrate
 flask-security-too
 bcrypt
+pandas

@@ -11,7 +11,7 @@ core_route = Blueprint('core_routes',__name__)
 
 
 core_route.add_url_rule('/','index',core.index, methods=['GET'])
-core_route.add_url_rule('/create-table', view_func=core.create_db_tables, methods=['GET'])
+core_route.add_url_rule('/create-tables', view_func=core.create_db_tables, methods=['GET'])
 core_route.add_url_rule('/register', view_func=core.signUp, methods=['GET','POST'])
 core_route.add_url_rule('/register/lecturer', view_func=core.lecturer_sign_up, methods=['GET', 'POST'])
 core_route.add_url_rule('/register/student', view_func=core.student_sign_up, methods=['GET', 'POST'])
