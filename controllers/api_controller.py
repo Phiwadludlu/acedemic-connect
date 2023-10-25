@@ -32,17 +32,22 @@ def schedule_appointment():
 
 
 
-def fetch_appoinments():
-    all_appoinments = db.session.query(Appointment).all()
-    #return format_module_data(all_appoinments), 200
+def fetch_student_appointments():
+    all_appoinments = db.session.query(Appointment, Student, TimeSlot).filter(and_(Appointment.student_id == current_user.student.id, Appointment.timeslot_id == TimeSlot.id, Student.id == current_user.student.id))
+    return all_appoinments
+
+def fetch_lecturer_appointments():
+    all_appoinments = db.session.query(Appointment, Student, TimeSlot).filter(and_(Appointment.lecturer_id == current_user.lecturer.id, Appointment.timeslot_id == TimeSlot.id))
+    return all_appoinments
     
-def get_appoinment_by_approval_status():
+def get_appointment_by_approval_status():
     req_data = request.data
     form_data = json.loads(req_data)
     
     if 'approval_status' in form_data:
         status = form_data['approval_status']
         filtered_appointments = Appointment.query.filter_by(approval_status=status).all()
+        return jsonify(filtered_appointments), 200
         
 def get_appointments_by_lecture_staff_number():
     req_data = request.data
@@ -52,6 +57,7 @@ def get_appointments_by_lecture_staff_number():
         lecturer_staff_number = form_data["lecturer_staff_number"]
         lecturer = Lecturer.query.filter(Lecturer.staff_number == lecturer_staff_number).first()
         appointments = Appointment.query.filter(Appointment.lecturer_id == lecturer.id)
+        return jsonify(appointments), 200
 
         
 def get_appointments_by_student_number():
@@ -62,9 +68,9 @@ def get_appointments_by_student_number():
         student_number = form_data["student_number"]
         student = Student.query.filter(Student.student_number == student_number).first()
         appointments = Appointment.query.filter(Appointment.student_id == student.id)
-        
+        return jsonify(appointments), 200
     
-def get_appoinments_by_module_code():
+def get_appointments_by_module_code():
     req_data = request.data
     form_data = json.loads(req_data)
     
@@ -72,6 +78,7 @@ def get_appoinments_by_module_code():
         module_code = form_data['module_code']
         module_record = Module.query.filter(Module.code == module_code).first()
         appointments = Appointment.query.filter(module_record.id == Appointment.module_id).all()
+        return jsonify(appointments), 200
         
 def get_appointments_by_attendance_status():
     req_data = request.data
@@ -80,15 +87,17 @@ def get_appointments_by_attendance_status():
     if 'attendance_status' in form_data:
         status = form_data['attendance_status']
         appointments = Appointment.query.filter_by(attendance_status =status).all()
+        return jsonify(appointments), 200
     
 
-def fetch_modules():
+def get_all_modules():
     all_modules = db.session.query(Module).all()
     return format_module_data(all_modules), 200  
 
 
 def get_single_module_by_module_code(module_code):
     module = Module.query.filter(Module.code==module_code).first()
+    return jsonify(module)
     
 def get_modules_by_lecture_staff_number():
     req_data = request.data
@@ -97,7 +106,8 @@ def get_modules_by_lecture_staff_number():
     if "lecture_staff_number" in form_data:
         lecturer_staff_number = form_data["lecturer_staff_number"]
         lecturer = Lecturer.query.filter(Lecturer.staff_number == lecturer_staff_number).first()
-        modules = Module.query.filter(Module.lecturer_id == lecturer.id)
+        all_modules = Module.query.filter(Module.lecturer_id == lecturer.id)
+        return format_module_data(all_modules), 200
 
     
 def get_reschedule_approval_by_student_number():
@@ -108,7 +118,8 @@ def get_reschedule_approval_by_student_number():
         student_number = form_data["student_number"]
         student = Student.query.filter(Student.student_number == student_number).first()
         student_appointments_needing_approval = Appointment.query.filter(and_(Appointment.student_id == student.id, Appointment.approval_status==ApprovalStatusChoices.PENDING))
-        
+        return jsonify(student_appointments_needing_approval), 200
+
 def get_reschedule_approval_by_staff_number():
     req_data = request.data
     form_data = json.load(req_data)
@@ -117,6 +128,7 @@ def get_reschedule_approval_by_staff_number():
         staff_number = form_data["staff_number"]
         lecturer = Lecturer.query.filter(Lecturer.staff_number == staff_number).first()
         lecturer_appointments_needing_approval = Appointment.query.filter(and_(Appointment.lecturer_id == lecturer.id, Appointment.approval_status==ApprovalStatusChoices.PENDING))
+        return jsonify(lecturer_appointments_needing_approval), 200
 
 def get_timeslot_by_day():
     req_data = request.data
@@ -134,6 +146,18 @@ def get_timeslot_by_staff_number():
         staff_number = form_data['staff_number']
         lecturer = Lecturer.query.filter(Lecturer.staff_number == staff_number).first()
         timeslots = TimeSlot.query.filter(TimeSlot.lecture_id == lecturer.id).all()
+        return format_timeslot_data(timeslots), 200
     
 def get_all_timeslots():
     timeslots = TimeSlot.query.all()
+    return format_timeslot_data(timeslots), 200
+
+def get_timeslots_by_module():
+    req_data = request.data
+    form_data = json.loads(req_data)
+    
+    if 'module_code' in form_data:
+        module_code = form_data['module_code']
+        module = Module.query.filter(Module.code == module_code).first()
+        timeslots = TimeSlot.query.filter(TimeSlot.lecture_id == module.lecturer_id).all()
+        return format_timeslot_data(timeslots)

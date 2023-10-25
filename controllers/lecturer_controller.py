@@ -12,9 +12,9 @@ def index():
     #Student Dashboard
     tag = request.args.get('tag')
 
-    upcoming_appointments = api_ctrl.fetch_lecturer_appoinments().filter(and_(Appointment.approval_status == ApprovalStatusChoices.APPROVED, Appointment.attendance_status == AttendanceChoices.PENDING)).all()
-    old_appointments = api_ctrl.fetch_lecturer_appoinments().filter(and_( or_(Appointment.approval_status == ApprovalStatusChoices.APPROVED, Appointment.approval_status == ApprovalStatusChoices.DECLINED), Appointment.attendance_status != AttendanceChoices.PENDING)).all()
-    pending_appointments = api_ctrl.fetch_lecturer_appoinments().filter(Appointment.approval_status == ApprovalStatusChoices.PENDING).all()
+    upcoming_appointments = api_ctrl.fetch_lecturer_appointments().filter(and_(Appointment.approval_status == ApprovalStatusChoices.APPROVED, Appointment.attendance_status == AttendanceChoices.PENDING)).all()
+    old_appointments = api_ctrl.fetch_lecturer_appointments().filter(and_( or_(Appointment.approval_status == ApprovalStatusChoices.APPROVED, Appointment.approval_status == ApprovalStatusChoices.DECLINED), Appointment.attendance_status != AttendanceChoices.PENDING)).all()
+    pending_appointments = api_ctrl.fetch_lecturer_appointments().filter(Appointment.approval_status == ApprovalStatusChoices.PENDING).all()
     if tag==None:
         return render_template("views/lecturer/partial/Upcoming.html", upcoming_appointments=api_s.format_appointments_tile_data(upcoming_appointments))
     elif tag.lower() == "upcoming":

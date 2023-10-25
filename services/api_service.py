@@ -67,7 +67,7 @@ def format_appointments_tile_data(data):
         appointment, student, timeslot = item
         schema = {
                 "appointment_uuid" : appointment.appointment_uuid,
-                "student_fullname" : student.student_number,
+                "student_fullname" : student.student_fullname,
                 "day_of_week" : appointment.date.strftime("%A"),
                 "day_of_month": appointment.date.day,
                 "day_time" : appointment.date.strftime("%A") + ", " + timeslot.start_time.strftime("%I:%M %p"),

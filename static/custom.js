@@ -16,7 +16,7 @@ const app = Vue.createApp({
         async fetchModuleItems() {
             try {
                 // Replace with your actual API endpoint for moduleItems
-                const response = await fetch('/v1/api/fetch_modules', {
+                const response = await fetch('/v1/api/get_all_modules', {
                     mode: 'cors',
                     method: 'GET',
                     headers: {
@@ -149,7 +149,7 @@ app.component('sessionpicker', {
         async fetchTimeslots() {
             try {
                 // Replace with your actual API endpoint for moduleItems
-                const response = await fetch('/v1/api/fetch_timeslots_by_module', {
+                const response = await fetch('/v1/api/get_timeslots_by_module', {
                     mode: 'cors',
                     method: 'POST',
                     headers: {

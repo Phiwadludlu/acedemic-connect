@@ -5,13 +5,13 @@ from controllers import api_controller as api_ctrl
 
 api_route = Blueprint('api_routes',__name__)
 
-api_route.add_url_rule('/schedule_appoinment', 'schedule_appoinment',api_ctrl.schedule_appointment, methods=['POST'])
-api_route.add_url_rule('/fetch_modules', 'fetch_modules',api_ctrl.fetch_modules, methods=['GET'])
-api_route.add_url_rule('/fetch_timeslots_by_module', 'fetch_timeslots_by_module',api_ctrl.fetch_timeslots_by_module, methods=['POST'])
-api_route.add_url_rule('/get_appoinment_by_approval_status', 'get_appoinment_by_approval_status',api_ctrl.get_appoinment_by_approval_status, methods=['POST'])
+api_route.add_url_rule('/schedule_appointment', 'schedule_appointment',api_ctrl.schedule_appointment, methods=['POST'])
+api_route.add_url_rule('/get_all_modules', 'fetch_modules',api_ctrl.get_all_modules, methods=['GET'])
+api_route.add_url_rule('/get_timeslots_by_module', 'fetch_timeslots_by_module',api_ctrl.get_timeslots_by_module, methods=['POST'])
+api_route.add_url_rule('/get_appointment_by_approval_status', 'get_appoinment_by_approval_status',api_ctrl.get_appointment_by_approval_status, methods=['POST'])
 api_route.add_url_rule('/get_appointments_by_lecture_staff_number', 'get_appointments_by_lecture_staff_number',api_ctrl.get_appointments_by_lecture_staff_number, methods=['POST'])
 api_route.add_url_rule('/get_appointments_by_student_number', 'get_appointments_by_student_number',api_ctrl.get_appointments_by_student_number, methods=['POST'])
-api_route.add_url_rule('/get_appoinments_by_module_code', 'get_appoinments_by_module_code',api_ctrl.get_appoinments_by_module_code, methods=['POST'])
+api_route.add_url_rule('/get_appointments_by_module_code', 'get_appoinments_by_module_code',api_ctrl.get_appointments_by_module_code, methods=['POST'])
 api_route.add_url_rule('/get_appointments_by_attendance_status', 'get_appointments_by_attendance_status',api_ctrl.get_appointments_by_attendance_status, methods=['POST'])
 api_route.add_url_rule('/get_single_module_by_module_code', 'get_single_module_by_module_code',api_ctrl.get_single_module_by_module_code, methods=['POST'])
 api_route.add_url_rule('/get_modules_by_lecture_staff_number', 'get_modules_by_lecture_staff_number',api_ctrl.get_modules_by_lecture_staff_number, methods=['POST'])
