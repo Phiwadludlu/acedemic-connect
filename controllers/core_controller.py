@@ -4,8 +4,11 @@ from flask import request, render_template, flash, redirect, url_for, session
 from flask_security import hash_password, anonymous_user_required, auth_required
 
 from forms.auth_forms.sign_up_form import StudentRegisterForm, LecturerRegisterForm
-from models import Student, User, Role, db, Lecturer
+from models import Student, User, Role, db, Lecturer, Appointment, Module, TimeSlot
 from utils.create_db_tables import  create_tables
+from flask_login import current_user
+from services import api_service as api_s
+
 @anonymous_user_required
 def index():
     return render_template("views/LandingpageView.html")
@@ -106,9 +109,14 @@ def single_appointment(appointment_uuid):
     # TODO: Determine the view to render based on appointment details
     #       If approval_status == Reschedule, show reschedule view
     #       else show appointment details as normal
-    _type = request.args.get('type')
 
-    return render_template("views/Appointment.html", type=_type, appointment_uuid=appointment_uuid)
+    appointment = db.session.query(Appointment).filter( Appointment.appointment_uuid == appointment_uuid).first()
+    module = db.session.query(Module).filter( Module.id == appointment.module_id).first()
+    student = db.session.query(Student).filter( Student.id == appointment.student_id).first()
+    timeslot = db.session.query(TimeSlot).filter( TimeSlot.id == appointment.timeslot_id).first()
+    appointment_collection = (appointment, module, student, timeslot)
+    api
+    return render_template("views/Appointment.html", appointment=appointment, current_user=current_user)
 
 @auth_required()
 def reschedule_appointment(appointment_uuid):

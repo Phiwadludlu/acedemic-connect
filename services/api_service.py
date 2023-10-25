@@ -9,8 +9,8 @@ def format_timeslot_data(timeslots):
             "timeslots" : {
                 "timeslot_id" : slot.id, 
                 "period" : {
-                    "start_time" : slot.start_time.isoformat(), 
-                    "end_time" : slot.end_time.isoformat()
+                    "start_time" : slot.start_time.isoformat(timespec="minutes"), 
+                    "end_time" : slot.end_time.isoformat(timespec="minutes")
                 }
             }
         }
@@ -47,3 +47,15 @@ def format_module_data(data):
         result.append(schema)
 
     return jsonify(result)
+
+def format_single_appointment_data(data):
+    appointment, module, student, timeslot = data
+    schema = {
+            "appointment_uuid" : appointment.appointment_uuid,
+            "student_number" : student.student_number,
+            "student_fullname" : student.student_fullname,
+            "module_name" : module.name,
+            "appointment_timeslot" : timeslot.start_time.isoformat(timespec='minutes') + "-" + timeslot.end_time.isoformat(timespec='minutes'),
+            "appointment_reason" : appointment.appointment_reason,
+        }
+    return jsonify(schema)

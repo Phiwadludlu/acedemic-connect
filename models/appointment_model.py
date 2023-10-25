@@ -13,6 +13,7 @@ class Appointment(db.Model):
     attendance_status = db.Column(db.Enum(AttendanceChoices))
     appointment_reason = db.Column(db.String(255))
     created_at = db.Column(db.DateTime(), default=datetime.datetime.now)
+    appointment_uuid = db.Column(db.String(255))
 
     lecturer_id = db.Column(db.Integer(),db.ForeignKey("lecturers.id"))
     student_id = db.Column(db.Integer(), db.ForeignKey("students.id"))

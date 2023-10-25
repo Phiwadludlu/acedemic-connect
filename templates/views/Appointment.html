@@ -27,7 +27,7 @@
                     Student number
                 </p>
                 <p class="fw-lighter">
-                    Student number
+                    {{ appointment.student_id }}
                 </p>
             </div>
             <div class="row">
@@ -35,15 +35,7 @@
                     Student name
                 </p>
                 <p class="fw-lighter">
-                    Student name
-                </p>
-            </div>
-            <div class="row">
-                <p class="fw-medium">
-                    Qualification
-                </p>
-                <p class="fw-lighter">
-                    Qualification
+                    {{ appointment.student_id }}
                 </p>
             </div>
             <div class="row">
@@ -51,7 +43,7 @@
                     Module
                 </p>
                 <p class="fw-lighter">
-                    Module
+                    {{ appointment.module_id }}
                 </p>
             </div>
             <div class="row">
@@ -59,7 +51,7 @@
                     Time
                 </p>
                 <p class="fw-lighter">
-                    Timeslot
+                    {{ appointment.timeslot_id }}
                 </p>
             </div>
             <div class="row">
@@ -67,11 +59,11 @@
                     Reason for appointment
                 </p>
                 <p class="fw-lighter">
-                    Reason for appointment
+                    {{ appointment.appointment_reason }}
                 </p>
             </div>
         </div>
-        {% if type == 'pending' %}
+        {% if appointment.approval_status == 'Pending' %}
         <div class="d-flex flex-column gap-3">
             <div class="row">
                 <a role="button" class="btn bg-success-subtle rounded">
@@ -83,11 +75,13 @@
                     Decline
                 </a>
             </div>
+            {% if current_user.roles.name == 'lecturer' %}
             <div class="row">
                 <a role="button" href="/appointment/{{appointment_uuid}}/reschedule" class="btn border-success-subtle rounded">
                     Reschedule
                 </a>
             </div>
+            {% endif %}
         </div>
         {% endif %}
     </div>
