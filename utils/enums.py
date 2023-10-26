@@ -23,3 +23,8 @@ class DayChoices(enum.Enum):
     THURSDAY = "Thursday"
     FRIDAY = "Friday"
     SATURDAY = "Saturday"
+
+class NotificationStatus(enum.Enum):
+
+    Pending = 0
+    Read = 1

@@ -32,6 +32,7 @@ class User(db.Model, fsqla.FsUserMixin):
     # Relationship with the roles table
     roles = db.relationship('Role', secondary='roles_users', backref=backref("users", lazy="dynamic"))
 
+    notifications = db.relationship("Notification", back_populates="user")
 
 
 

@@ -71,6 +71,9 @@ def student_sign_up():
             new_user.roles.append(student_role)
 
             new_student = Student(student_number=register_student_form.student_number.data, user=new_user)
+            new_student.student_firstname = register_student_form.first_name.data
+            new_student.student_lastname = register_student_form.last_name.data
+            new_student.create_full_name()
 
             db.session.add(new_user)
             db.session.add(new_student)
