@@ -2,6 +2,54 @@ from flask import jsonify
 from datetime import datetime
 
 def format_timeslot_data(timeslots):
+    skeleton = [
+        {'day' : 'Monday', 'timeslots' : []},
+        {'day' : 'Tuesday', 'timeslots' : []},
+        {'day' : 'Wednesday', 'timeslots' : []},
+        {'day' : 'Thursday', 'timeslots' : []},
+        {'day' : 'Friday', 'timeslots' : []}
+    ]
+
+    for slot in timeslots:
+        if slot.day == 'Monday':
+            skeleton[0]['timeslots'].\
+                append({
+                    "timeslot_id" : slot.id,
+                    "start_time" : slot.start_time.isoformat(timespec="minutes"), 
+                    "end_time" : slot.end_time.isoformat(timespec="minutes")
+                })
+        if slot.day == 'Tuesday':
+            skeleton[1]['timeslots'].\
+                append({
+                    "timeslot_id" : slot.id,
+                    "start_time" : slot.start_time.isoformat(timespec="minutes"), 
+                    "end_time" : slot.end_time.isoformat(timespec="minutes")
+                })
+        if slot.day == 'Wednesday':
+            skeleton[2]['timeslots'].\
+                append({
+                    "timeslot_id" : slot.id,
+                    "start_time" : slot.start_time.isoformat(timespec="minutes"), 
+                    "end_time" : slot.end_time.isoformat(timespec="minutes")
+                })
+        if slot.day == 'Thursday':
+            skeleton[3]['timeslots'].\
+                append({
+                    "timeslot_id" : slot.id,
+                    "start_time" : slot.start_time.isoformat(timespec="minutes"), 
+                    "end_time" : slot.end_time.isoformat(timespec="minutes")
+                })
+        if slot.day == 'Friday':
+            skeleton[4]['timeslots'].\
+                append({
+                    "timeslot_id" : slot.id,
+                    "start_time" : slot.start_time.isoformat(timespec="minutes"), 
+                    "end_time" : slot.end_time.isoformat(timespec="minutes")
+                })
+
+    return jsonify(skeleton)
+
+def format_timeslot_label_data(timeslots):
     tmp = []
 
     for slot in timeslots:
@@ -60,6 +108,7 @@ def format_single_appointment_data(data):
             "appointment_reason" : appointment.appointment_reason,
             "approval_status" : appointment.approval_status.value,
             "is_reschedule" : appointment.is_reschedule,
+            "attendance_status" : appointment.attendance_status.value,
             "old_timeslot" : old_timeslot.start_time.isoformat(timespec='minutes') + "-" + old_timeslot.end_time.isoformat(timespec='minutes') if old_timeslot else '',
         }
     return schema

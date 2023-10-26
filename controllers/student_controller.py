@@ -13,7 +13,7 @@ def index():
     #Student Dashboard
     tag = request.args.get('tag')
     upcoming_appointments = api_ctrl.fetch_student_appointments().filter(and_(Appointment.approval_status == ApprovalStatusChoices.APPROVED, Appointment.attendance_status == AttendanceChoices.PENDING)).order_by(Appointment.date.asc()).all()
-    old_appointments = api_ctrl.fetch_student_appointments().filter(and_( or_(Appointment.approval_status == ApprovalStatusChoices.APPROVED, Appointment.approval_status == ApprovalStatusChoices.DECLINED, Appointment.approval_status == ApprovalStatusChoices.RESCHEDULED), Appointment.attendance_status != AttendanceChoices.PENDING)).order_by(Appointment.date.asc()).all()
+    old_appointments = api_ctrl.fetch_student_appointments().filter(and_( or_(Appointment.approval_status == ApprovalStatusChoices.APPROVED, Appointment.approval_status == ApprovalStatusChoices.DECLINED, Appointment.approval_status == ApprovalStatusChoices.RESCHEDULED), Appointment.attendance_status != AttendanceChoices.PENDING)).order_by(Appointment.date.desc()).all()
     pending_appointments = api_ctrl.fetch_student_appointments().filter(Appointment.approval_status == ApprovalStatusChoices.PENDING).order_by(Appointment.date.asc()).all()
     if tag==None:
         return render_template("views/student/partial/Upcoming.html", upcoming_appointments=api_s.format_appointments_tile_data(upcoming_appointments))

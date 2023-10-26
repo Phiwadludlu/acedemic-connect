@@ -9,6 +9,7 @@ from utils.enums import ApprovalStatusChoices, AttendanceChoices
 from utils.create_db_tables import  create_tables
 from flask_login import current_user
 from services import api_service as api_s
+from services.populate_moduletable import run as populate_module_run
 from sqlalchemy import and_
 import uuid
 import json
@@ -22,6 +23,10 @@ def create_db_tables():
 
         create_tables()
         return "Done"
+
+def populate_tables():
+    populate_module_run()
+    return "All done!"
 
 
 @anonymous_user_required
@@ -178,6 +183,11 @@ def decline_appointment(appointment_uuid):
     appointment = Appointment.query.filter(Appointment.appointment_uuid == appointment_uuid).first()
     appointment.approval_status = ApprovalStatusChoices.DECLINED
     appointment.attendance_status = AttendanceChoices.DECLINED
+    
+    timeslot = TimeSlot.query.filter(TimeSlot.id == appointment.timeslot_id).first()
+    timeslot.is_available = True
+
+    db.session.add(timeslot)
     db.session.add(appointment)
     db.session.commit()
 

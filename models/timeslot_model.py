@@ -9,6 +9,7 @@ class TimeSlot(db.Model):
     day = db.Column(db.String(255))
     start_time = db.Column(db.Time())
     end_time = db.Column(db.Time())
+    is_available = db.Column(db.Boolean(), default=True)
     lecturer_id = db.Column(db.Integer(), db.ForeignKey("lecturers.id"))
 
     #Relationship with lecturer

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% import "macros/__moduletable__.html" as moduletable %}
+
+{% block title %}
+| Manage Modules
+{% endblock %}
+
+{% block content %}
+<div class="container-lg h-100">
+    <div class="d-flex flex-row">
+        <a href="/lecturer" role="button" class="btn bg-transparent rounded border border-0">
+            <span class="material-symbols-outlined">
+                arrow_back_ios_new
+            </span>
+        </a>
+        <div class="col d-block pe-3 me-3">
+            <p class="fs-3 fw-medium mb-0 text-center text-success">
+                Manage modules
+            </p>
+            <div class="d-md-none d-flex justify-content-center w-100">
+                <div class="border border-secondary border-1 w-50"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid mt-2">
+        <div class="d-flex justify-content-center gap-2">
+            <a role="button" href="/lecturer/manage" class="btn border border-2 btn-outline-success rounded-pill px-4">
+                All
+            </a>
+            <a role="button" href="/lecturer/manage?lecturer={{ current_user.lecturer.staff_number }}" class="btn bg-success text-light rounded-pill px-4">
+                My Modules
+            </a>
+        </div>
+    </div>
+    <div class="container-fluid mt-2">
+        <div class="d-flex flex-row justify-content-end mb-2">
+            <a role="button" href="manage/add"
+                class="btn btn-outline-success d-flex align-items-center border border-1"><span
+                    class="material-symbols-outlined"> add </span> Add module</a>
+        </div>
+        <div class="table-responsive h-100" id="table-area">
+            {{ moduletable.self(modules, allow_edit) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

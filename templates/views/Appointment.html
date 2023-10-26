@@ -3,6 +3,7 @@
 <!--TODO-->
 
 {% block content %}
+<div class="toast-container p-3 bottom-0 end-0" id="toast-area"></div>
 <div class="container-lg">
     <div class="d-flex flex-row pt-2">
         <a href="{{ url_for('core_routes.proxy_redirect') }}" role="button"
@@ -73,7 +74,27 @@
                     {{ appointment.appointment_reason }}
                 </p>
             </div>
-            {% if (appointment.approval_status=='Pending' and current_user.roles[0].name == 'student') or (appointment.is_reschedule==True and current_user.roles[0].name == 'lecturer' and appointment.approval_status=='Pending') %}
+            {% if appointment.attendance_status != 'Pending' %}
+            <div class="row">
+                <p class="fw-medium">
+                    Approval Status
+                </p>
+                <p class="fw-lighter">
+                    {{ appointment.approval_status }}
+                </p>
+            </div>
+            <div class="row">
+                <p class="fw-medium">
+                    Student Attendance Status
+                </p>
+                <p class="fw-lighter">
+                    {{ appointment.attendance_status }}
+                </p>
+            </div>
+            {% endif %}
+            {% if (appointment.approval_status=='Pending' and current_user.roles[0].name == 'student') or
+            (appointment.is_reschedule==True and current_user.roles[0].name == 'lecturer' and
+            appointment.approval_status=='Pending') %}
             <div class="row">
                 <p class="fw-medium">
                     Approval Status
@@ -86,29 +107,93 @@
         </div>
         {% if (appointment.approval_status == 'Pending') %}
         <div class="d-flex flex-column gap-3">
-            {% if (appointment.is_reschedule==True and current_user.roles[0].name == 'student') or (appointment.is_reschedule==False and current_user.roles[0].name == 'lecturer') %}
+            {% if (appointment.is_reschedule==True and current_user.roles[0].name == 'student') or
+            (appointment.is_reschedule==False and current_user.roles[0].name == 'lecturer') %}
             <div class="row">
-                <a href="/appointment/approve/{{appointment.appointment_uuid}}" role="button" class="btn bg-success-subtle rounded">
+                <a href="/appointment/approve/{{appointment.appointment_uuid}}" role="button"
+                    class="btn bg-success-subtle rounded">
                     Accept
                 </a>
             </div>
             <div class="row">
-                <a href="/appointment/decline/{{appointment.appointment_uuid}}" role="button" class="btn border-success-subtle rounded">
+                <a href="/appointment/decline/{{appointment.appointment_uuid}}" role="button"
+                    class="btn border-success-subtle rounded">
                     Decline
                 </a>
             </div>
             {% endif %}
             {% if (current_user.roles[0].name == 'lecturer' and appointment.is_reschedule==False) %}
             <div class="row">
-                <a role="button" href="/appointment/{{appointment.appointment_uuid}}/reschedule" class="btn border-success-subtle rounded">
+                <a role="button" href="/appointment/{{appointment.appointment_uuid}}/reschedule"
+                    class="btn border-success-subtle rounded">
                     Reschedule
                 </a>
             </div>
             {% endif %}
         </div>
         {% endif %}
+        {% if appointment.approval_status == 'Approved' and appointment.attendance_status == 'Pending' and
+        current_user.roles[0].name == 'lecturer' %}
+        <div class="d-flex flex-column gap-3">
+            <div class="row">
+                <p class="fw-medium">
+                    Student Attendance Status
+                </p>
+                <select id="appointmentAttendanceStatus" class="form-select" aria-label="Attendance Status">
+                    <option selected>Choose student attendance</option>
+                    <option value="Present">Present</option>
+                    <option value="Missed">Missed</option>
+                </select>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
 
-{}
+{% if appointment.approval_status == 'Approved' and appointment.attendance_status == 'Pending' and
+current_user.roles[0].name == 'lecturer' %}
+
+{% block script %}
+<script type="text/javascript">
+    const studentAttendance = document.getElementById("appointmentAttendanceStatus");
+    const appointment_uuid = '{{appointment.appointment_uuid}}';
+    studentAttendance.addEventListener('change', (e) => {
+        const value = e.target.value;
+        fetch('/v1/api/update_appointment_student_attendance', {
+            mode: 'cors',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ student_attendance: value, appointment_uuid })
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        }).then(data => {
+            if (data.code === -1) {
+                appendAlert(`Something went wrong. Try again later.`, 'warning');
+                const toastItem = document.querySelector("div.toast");
+                if (toastItem) {
+                    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastItem);
+                    toastBootstrap.show()
+                };
+            } else if (data.code === 1) {
+                window.location.assign(`/appointment/${appointment_uuid}`);
+            }
+        }).catch(error => {
+            console.error('There was a problem', error);
+            appendAlert(`Something went wrong. Try again later.`, 'warning');
+            const toastItem = document.querySelector("div.toast");
+            if (toastItem) {
+                const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastItem);
+                toastBootstrap.show()
+            };
+        });
+    });
+</script>
+{% endblock %}
+
+{% endif %}
