@@ -40,12 +40,12 @@ def schedule_appointment():
 
 @roles_required('student')
 def fetch_student_appointments():
-    all_appoinments = db.session.query(Appointment, Student, TimeSlot).filter(and_(Appointment.student_id == current_user.student.id, Appointment.timeslot_id == TimeSlot.id, Student.id == current_user.student.id))
+    all_appoinments = db.session.query(Appointment, TimeSlot).filter(and_(Appointment.student_id == current_user.student.id, Appointment.timeslot_id == TimeSlot.id, Student.id == current_user.student.id))
     return all_appoinments
 
 @roles_required('lecturer')
 def fetch_lecturer_appointments():
-    all_appoinments = db.session.query(Appointment, Student, TimeSlot).filter(and_(Appointment.lecturer_id == current_user.lecturer.id, Appointment.timeslot_id == TimeSlot.id))
+    all_appoinments = db.session.query(Appointment,TimeSlot).filter(and_(Appointment.lecturer_id == current_user.lecturer.id, Appointment.timeslot_id == TimeSlot.id))
     return all_appoinments
 
 @auth_required()

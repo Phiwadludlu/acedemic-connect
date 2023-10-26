@@ -1,5 +1,6 @@
 from flask import jsonify
 from datetime import datetime
+from models import db, Student
 
 def format_timeslot_data(timeslots):
     skeleton = [
@@ -117,7 +118,8 @@ def format_single_appointment_data(data):
 def format_appointments_tile_data(data):
     result = []
     for item in data:
-        appointment, student, timeslot = item
+        appointment, timeslot = item
+        student = Student.query.filter(appointment.student_id == Student.id).first()
         schema = {
                 "appointment_uuid" : appointment.appointment_uuid,
                 "student_fullname" : student.student_fullname,

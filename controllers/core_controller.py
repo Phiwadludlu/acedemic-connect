@@ -183,6 +183,15 @@ def approve_appointment(appointment_uuid):
     appointment = Appointment.query.filter(Appointment.appointment_uuid == appointment_uuid).first()
     appointment.approval_status = ApprovalStatusChoices.APPROVED
     db.session.add(appointment)
+    db.session.flush()
+
+    all_pending_appointments_with_same_timeslot = Appointment.query.filter(and_(Appointment.timeslot_id == appointment.timeslot_id,Appointment.id != appointment.id)).all()
+
+    for record in all_pending_appointments_with_same_timeslot:
+        record.approval_status = ApprovalStatusChoices.DECLINED
+        record.attendance_status = AttendanceChoices.DECLINED
+        db.session.add(record)
+
     db.session.commit()
 
     return redirect('/appointment/%s' % (appointment_uuid))
