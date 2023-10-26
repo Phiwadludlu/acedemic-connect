@@ -1,7 +1,9 @@
 
 """The controllers module is for business logic"""
+import os
 from flask import request, render_template, flash, redirect, url_for, session
 from flask_security import hash_password, anonymous_user_required, auth_required
+from flask_security.confirmable import generate_confirmation_token, generate_confirmation_link
 
 from forms.auth_forms.sign_up_form import StudentRegisterForm, LecturerRegisterForm
 from models import Student, User, Role, db, Lecturer, Appointment, Module, TimeSlot
@@ -10,6 +12,8 @@ from utils.create_db_tables import  create_tables
 from flask_login import current_user
 from services import api_service as api_s
 from sqlalchemy import and_
+from itsdangerous import URLSafeTimedSerializer
+from services.auth_service import AuthService
 
 @anonymous_user_required
 def index():
@@ -36,7 +40,7 @@ def lecturer_sign_up():
 
             # Add user to DB logic here
             new_user = User(email=register_lecturer_form.email.data,
-                            password=hash_password(register_lecturer_form.password.data), active=True)
+                            password=hash_password(register_lecturer_form.password.data), active=False)
             new_user.fs_uniquifier = new_user.get_auth_token()
             new_user.is_active = True
             new_user.roles.append(lecturer_role)
@@ -46,8 +50,9 @@ def lecturer_sign_up():
             db.session.add(new_user)
             db.session.add(new_lecturer)
             db.session.commit()
-
-            flash("Account created successfully", category="info")
+            auth_service =AuthService()
+            auth_service.send_confimation_link(new_user)
+            flash("A confimation email has been sent to your email", category="info")
 
             return redirect(url_for("security.login"))
 
@@ -65,7 +70,7 @@ def student_sign_up():
 
             # Add user to DB logic here
             new_user = User(email=register_student_form.email.data,
-                            password=hash_password(register_student_form.password.data), active=True)
+                            password=hash_password(register_student_form.password.data), active=False)
             new_user.fs_uniquifier = new_user.get_auth_token()
             new_user.is_active = True
             new_user.roles.append(student_role)
@@ -79,7 +84,11 @@ def student_sign_up():
             db.session.add(new_student)
             db.session.commit()
 
-            flash("Account created successfully", category="info")
+            auth_service =AuthService()
+            auth_service.send_confimation_link(new_user)
+            
+            
+            flash("A confimation email has been sent to your account", category="info")
 
             return redirect(url_for("security.login"))
 
@@ -144,3 +153,34 @@ def decline_appointment(appointment_uuid):
     db.session.commit()
 
     return redirect('/appointment/%s' % (appointment_uuid))
+
+
+
+
+def confirm_account():
+
+    auth_service = AuthService()
+    token = request.args.get('token')
+
+    #confirm token
+    fs_uniquifier = auth_service.decode_token(token=token)
+
+    if fs_uniquifier !=None:
+
+        user = User.query.filter_by(fs_uniquifier=fs_uniquifier).first_or_404()
+
+        user.active = True
+
+        db.session.commit()
+
+        flash("Account successfully confirmed", category="info")
+        return redirect(url_for("security.login"))
+    
+    flash("Invalid or expired token", category="error")
+    return redirect(url_for("security.login"))
+
+
+
+
+
+

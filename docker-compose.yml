@@ -1,0 +1,14 @@
+version: '1'
+
+services:
+  flask-app:
+    build: .
+    ports:
+      - '5000:5000'
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+  
+  redis:
+    image: redis
