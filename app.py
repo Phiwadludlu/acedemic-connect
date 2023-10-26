@@ -21,7 +21,7 @@ def create_app():
 app = create_app()
 db.init_app(app)
 flask_migrate.Migrate(app=app, db=db)
-
+    
 
 #Authentication config
 user_datastore = flask_security.SQLAlchemySessionUserDatastore(session=db.session, user_model=User, role_model=Role)
