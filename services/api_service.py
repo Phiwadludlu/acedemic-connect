@@ -50,14 +50,17 @@ def format_module_data(data):
     return jsonify(result)
 
 def format_single_appointment_data(data):
-    appointment, module, student, timeslot = data
+    appointment, module, student, timeslot, old_timeslot = data
     schema = {
             "appointment_uuid" : appointment.appointment_uuid,
             "student_number" : student.student_number,
             "module_name" : module.name,
+            "module_code" : module.code,
             "appointment_timeslot" : timeslot.start_time.isoformat(timespec='minutes') + "-" + timeslot.end_time.isoformat(timespec='minutes'),
             "appointment_reason" : appointment.appointment_reason,
             "approval_status" : appointment.approval_status.value,
+            "is_reschedule" : appointment.is_reschedule,
+            "old_timeslot" : old_timeslot.start_time.isoformat(timespec='minutes') + "-" + old_timeslot.end_time.isoformat(timespec='minutes') if old_timeslot else '',
         }
     return schema
 
@@ -70,7 +73,7 @@ def format_appointments_tile_data(data):
                 "student_fullname" : student.student_fullname,
                 "day_of_week" : appointment.date.strftime("%A"),
                 "day_of_month": appointment.date.day,
-                "day_time" : appointment.date.strftime("%A") + ", " + timeslot.start_time.strftime("%I:%M %p"),
+                "day_time" : appointment.date.strftime("%d %b") + ", " + timeslot.start_time.strftime("%I:%M %p"),
             }
         result.append(schema)
     return result

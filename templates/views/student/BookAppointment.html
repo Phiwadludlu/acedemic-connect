@@ -100,7 +100,7 @@
         const appointment_module_code = app._instance.refs.ms.currentTags[0];
         const appointment_timeslot_id = app._instance.refs.sp.selectedTime;
         const appointment_reason = document.getElementById("bookAppointmentReason").value;
-        const appointment_date = document.getElementById("bookSelectDate").value;
+        const appointment_date = app._instance.refs.sp.selectedDay;
 
         const form_data = { appointment_module_code, appointment_timeslot_id, appointment_reason, appointment_date };
 

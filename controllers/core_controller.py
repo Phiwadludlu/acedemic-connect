@@ -1,15 +1,18 @@
 
 """The controllers module is for business logic"""
-from flask import request, render_template, flash, redirect, url_for, session
+from flask import request, render_template, flash, redirect, url_for, session, jsonify
 from flask_security import hash_password, anonymous_user_required, auth_required
 
 from forms.auth_forms.sign_up_form import StudentRegisterForm, LecturerRegisterForm
-from models import Student, User, Role, db, Lecturer, Appointment, Module, TimeSlot
+from models import Student, User, Role, db, Lecturer, Appointment, Module, TimeSlot, RescheduledApproval
 from utils.enums import ApprovalStatusChoices, AttendanceChoices
 from utils.create_db_tables import  create_tables
 from flask_login import current_user
 from services import api_service as api_s
 from sqlalchemy import and_
+import uuid
+import json
+from datetime import datetime
 
 @anonymous_user_required
 def index():
@@ -116,17 +119,52 @@ def single_appointment(appointment_uuid):
     #       else show appointment details as normal
 
     appointment = db.session.query(Appointment).filter( Appointment.appointment_uuid == appointment_uuid).first()
+    old_timeslot = None
+    if appointment.is_reschedule:
+        old_appointment_id = RescheduledApproval.query.filter(RescheduledApproval.new_appointment_id == appointment.id).first()
+        old_appointment = Appointment.query.filter(Appointment.id == old_appointment_id.id).first()
+        old_timeslot = TimeSlot.query.filter(TimeSlot.id == old_appointment.timeslot_id).first()
+    
     module = db.session.query(Module).filter( Module.id == appointment.module_id).first()
     student = db.session.query(Student).filter( Student.id == appointment.student_id).first()
     timeslot = db.session.query(TimeSlot).filter( TimeSlot.id == appointment.timeslot_id).first()
-    appointment_collection = (appointment, module, student, timeslot)
+    appointment_collection = (appointment, module, student, timeslot, old_timeslot)
     
     appointment_data = api_s.format_single_appointment_data(appointment_collection)
     return render_template("views/Appointment.html", appointment=appointment_data, current_user=current_user)
 
 def reschedule_appointment(appointment_uuid):
-    appointment = db.session.query(Appointment, Module, Student, TimeSlot).filter(and_(Appointment.module_id == Module.id, Student.id == Appointment.student_id, Appointment.timeslot_id == TimeSlot.id, Appointment.appointment_uuid == appointment_uuid)).first()
-    return render_template("views/RescheduleAppointment.html", appointment=api_s.format_single_appointment_data(appointment))
+    if request.method == "GET":
+        appointment = db.session.query(Appointment, Module, Student, TimeSlot).filter(and_(Appointment.module_id == Module.id, Student.id == Appointment.student_id, Appointment.timeslot_id == TimeSlot.id, Appointment.appointment_uuid == appointment_uuid)).first()
+        return render_template("views/RescheduleAppointment.html", appointment=api_s.format_single_appointment_data(appointment))
+    if request.method == "POST":
+        try:
+            appointment_record = Appointment.query.filter(Appointment.appointment_uuid == appointment_uuid).first()
+            appointment_record.approval_status = ApprovalStatusChoices.RESCHEDULED
+            appointment_record.attendance_status = AttendanceChoices.RESCHEDULED
+            db.session.add(appointment_record)
+            db.session.flush()
+
+            req_data = request.data
+            form_data = json.loads(req_data)
+
+            appointment_reason = form_data["appointment_reason"]
+            appointment_date = form_data["appointment_date"]
+            appointment_timeslot = form_data["appointment_timeslot_id"]
+            appointment_uuid = str(uuid.uuid1())
+
+
+            new_appointment = Appointment(date=datetime.fromisoformat(appointment_date),approval_status=ApprovalStatusChoices.PENDING,attendance_status=AttendanceChoices.PENDING,  appointment_reason="[RESCHEDULED] \n %s" % (appointment_reason),appointment_uuid=appointment_uuid,    lecturer_id=appointment_record.lecturer_id, student_id=appointment_record.student_id,   timeslot_id=appointment_timeslot,module_id=appointment_record.module_id, is_reschedule=True)
+            db.session.add(new_appointment)
+            db.session.flush()
+
+            reschedule_approval_appointment=RescheduledApproval(old_appointment_id=appointment_record.id,new_appointment_id=new_appointment.id)
+            db.session.add(reschedule_approval_appointment)
+            db.session.commit()
+
+            return jsonify({"code" : 1})
+        except:
+            return jsonify({"code" : -1})
 
 def approve_appointment(appointment_uuid):
     appointment = Appointment.query.filter(Appointment.appointment_uuid == appointment_uuid).first()
@@ -139,7 +177,7 @@ def approve_appointment(appointment_uuid):
 def decline_appointment(appointment_uuid):
     appointment = Appointment.query.filter(Appointment.appointment_uuid == appointment_uuid).first()
     appointment.approval_status = ApprovalStatusChoices.DECLINED
-    appointment.attendance_status = AttendanceChoices.MISSED
+    appointment.attendance_status = AttendanceChoices.DECLINED
     db.session.add(appointment)
     db.session.commit()
 

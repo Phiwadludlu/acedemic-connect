@@ -14,6 +14,7 @@ class Appointment(db.Model):
     appointment_reason = db.Column(db.String(255))
     created_at = db.Column(db.DateTime(), default=datetime.datetime.now)
     appointment_uuid = db.Column(db.String(255))
+    is_reschedule = db.Column(db.Boolean(), default=False)
 
     lecturer_id = db.Column(db.Integer(),db.ForeignKey("lecturers.id"))
     student_id = db.Column(db.Integer(), db.ForeignKey("students.id"))

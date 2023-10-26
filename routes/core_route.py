@@ -20,6 +20,6 @@ core_route.add_url_rule('/redirect-proxy', view_func=core.proxy_redirect, method
 core_route.add_url_rule("/calendar", 'calendar', core.calendar, methods=['GET'])
 core_route.add_url_rule("/notifications", 'notifications', core.notifications, methods=['GET'])
 core_route.add_url_rule("/appointment/<appointment_uuid>","single_appointment", core.single_appointment, methods=["GET"])
-core_route.add_url_rule("/appointment/<appointment_uuid>/reschedule","reschedule_appointment", core.reschedule_appointment, methods=["GET"])
+core_route.add_url_rule("/appointment/<appointment_uuid>/reschedule","reschedule_appointment", core.reschedule_appointment, methods=["GET","POST"])
 core_route.add_url_rule("/appointment/approve/<appointment_uuid>","approve_appointment", core.approve_appointment, methods=["GET"])
 core_route.add_url_rule("/appointment/decline/<appointment_uuid>","decline_appointment", core.decline_appointment, methods=["GET"])

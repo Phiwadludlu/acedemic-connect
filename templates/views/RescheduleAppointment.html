@@ -3,6 +3,7 @@
 <!--TODO-->
 
 {% block content %}
+<div class="toast-container p-3 bottom-0 end-0" id="toast-area"></div>
 <div class="container-lg">
     <div class="d-flex flex-row pt-2">
         <a href="{{ url_for('core_routes.proxy_redirect') }}" role="button"
@@ -54,9 +55,9 @@
                 <textarea class="form-control" id="rescheduleReason" rows="3"></textarea>
             </div>
             <div class="row">
-                <a role="button" class="btn bg-success-subtle rounded">
+                <button id="reschedule_button" role="button" class="btn bg-success-subtle rounded">
                     Reschedule
-                </a>
+                </button>
             </div>
         </div>
     </div>
@@ -64,5 +65,80 @@
 {% endblock %}
 
 {% block script %}
-<script src="/static/custom.js" type="module"></script>
+<script src="/static/custom.js" type="text/javascript"></script>
+<script type="text/javascript">
+    const collect_submit = document.getElementById('reschedule_button');
+
+    document.addEventListener('DOMContentLoaded',()=>{
+        console.log('{{appointment.module_code}}');
+        app._instance.data.selectedModule = '{{appointment.module_code}}';
+    });
+
+    const appendAlert = (message, type) => {
+        const wrapper = document.querySelector("div#toast-area");
+        wrapper.innerHTML = [
+            `<div class="toast align-items-center bg-${type} text-white position-relative border-0"
+                role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>`
+        ].join('');
+    };
+
+    collect_submit.addEventListener('click', () => {
+        const appointment_timeslot_id = app._instance.refs.sp.selectedTime;
+        const appointment_reason = document.getElementById("rescheduleReason").value;
+        const appointment_date = app._instance.refs.sp.selectedDay;
+
+        const form_data = {appointment_timeslot_id, appointment_reason, appointment_date };
+
+        if (appointment_timeslot_id && appointment_reason && appointment_date) {
+            console.log(form_data);
+            const endpoint = window.location.pathname;
+            const requestOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(form_data)
+            };
+
+            fetch(endpoint, requestOptions)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.code === -1) {
+                        appendAlert(`Something went wrong. Try again later.`, 'warning');
+                        const toastItem = document.querySelector("div.toast");
+                        if (toastItem) {
+                            const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastItem);
+                            toastBootstrap.show()
+                        };
+                    } else if (data.code === 1) {
+                        window.location.assign("/redirect-proxy");
+                    }
+                })
+                .catch(error => {
+                    console.error('There was a problem', error);
+                    appendAlert(`Something went wrong. Try again later.`, 'warning');
+                });
+        } else {
+            appendAlert(`Please fill in all the fields.`, 'warning');
+            const toastItem = document.querySelector("div.toast");
+            if (toastItem) {
+                const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastItem);
+                toastBootstrap.show()
+            };
+        }
+    });
+</script>
 {% endblock %}

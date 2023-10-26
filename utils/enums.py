@@ -13,7 +13,8 @@ class AttendanceChoices (enum.Enum):
     PRESENT = 'Present'
     MISSED = 'Missed'
     PENDING = 'Pending'
-
+    RESCHEDULED = 'Rescheduled'
+    DECLINED = 'Declined'
 
 class DayChoices(enum.Enum):
 

@@ -38,6 +38,24 @@
                     {{ appointment.module_name }}
                 </p>
             </div>
+            {% if appointment.is_reschedule %}
+            <div class="row">
+                <p class="fw-medium">
+                    Old Time
+                </p>
+                <p class="fw-lighter">
+                    {{ appointment.old_timeslot }}
+                </p>
+            </div>
+            <div class="row">
+                <p class="fw-medium">
+                    New Time
+                </p>
+                <p class="fw-lighter">
+                    {{ appointment.appointment_timeslot }}
+                </p>
+            </div>
+            {% else %}
             <div class="row">
                 <p class="fw-medium">
                     Time
@@ -46,6 +64,7 @@
                     {{ appointment.appointment_timeslot }}
                 </p>
             </div>
+            {% endif %}
             <div class="row">
                 <p class="fw-medium">
                     Reason for appointment
@@ -54,9 +73,20 @@
                     {{ appointment.appointment_reason }}
                 </p>
             </div>
+            {% if (appointment.approval_status=='Pending' and current_user.roles[0].name == 'student') or (appointment.is_reschedule==True and current_user.roles[0].name == 'lecturer' and appointment.approval_status=='Pending') %}
+            <div class="row">
+                <p class="fw-medium">
+                    Approval Status
+                </p>
+                <p class="fw-lighter">
+                    {{ appointment.approval_status }}
+                </p>
+            </div>
+            {% endif %}
         </div>
-        {% if (appointment.approval_status == 'Pending' and current_user.roles[0].name == 'lecturer') %}
+        {% if (appointment.approval_status == 'Pending') %}
         <div class="d-flex flex-column gap-3">
+            {% if (appointment.is_reschedule==True and current_user.roles[0].name == 'student') or (appointment.is_reschedule==False and current_user.roles[0].name == 'lecturer') %}
             <div class="row">
                 <a href="/appointment/approve/{{appointment.appointment_uuid}}" role="button" class="btn bg-success-subtle rounded">
                     Accept
@@ -67,7 +97,8 @@
                     Decline
                 </a>
             </div>
-            {% if current_user.roles[0].name == 'lecturer' %}
+            {% endif %}
+            {% if (current_user.roles[0].name == 'lecturer' and appointment.is_reschedule==False) %}
             <div class="row">
                 <a role="button" href="/appointment/{{appointment.appointment_uuid}}/reschedule" class="btn border-success-subtle rounded">
                     Reschedule
