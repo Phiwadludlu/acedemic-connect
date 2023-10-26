@@ -11,3 +11,6 @@ flask-migrate
 flask-security-too
 bcrypt
 pandas
+flask-cors==4.0.0
+psycopg2
+gunicorn

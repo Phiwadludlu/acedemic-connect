@@ -2,6 +2,7 @@
 """The controllers module is for business logic"""
 from flask import request, render_template, flash, redirect, url_for, session, jsonify
 from flask_security import hash_password, anonymous_user_required, auth_required
+from flask_security.decorators import roles_required
 
 from forms.auth_forms.sign_up_form import StudentRegisterForm, LecturerRegisterForm
 from models import Student, User, Role, db, Lecturer, Appointment, Module, TimeSlot, RescheduledApproval
@@ -138,6 +139,7 @@ def single_appointment(appointment_uuid):
     appointment_data = api_s.format_single_appointment_data(appointment_collection)
     return render_template("views/Appointment.html", appointment=appointment_data, current_user=current_user)
 
+@roles_required('lecturer')
 def reschedule_appointment(appointment_uuid):
     if request.method == "GET":
         appointment = db.session.query(Appointment, Module, Student, TimeSlot).filter(and_(Appointment.module_id == Module.id, Student.id == Appointment.student_id, Appointment.timeslot_id == TimeSlot.id, Appointment.appointment_uuid == appointment_uuid)).first()
@@ -171,6 +173,7 @@ def reschedule_appointment(appointment_uuid):
         except:
             return jsonify({"code" : -1})
 
+@auth_required()
 def approve_appointment(appointment_uuid):
     appointment = Appointment.query.filter(Appointment.appointment_uuid == appointment_uuid).first()
     appointment.approval_status = ApprovalStatusChoices.APPROVED
@@ -179,6 +182,7 @@ def approve_appointment(appointment_uuid):
 
     return redirect('/appointment/%s' % (appointment_uuid))
 
+@auth_required()
 def decline_appointment(appointment_uuid):
     appointment = Appointment.query.filter(Appointment.appointment_uuid == appointment_uuid).first()
     appointment.approval_status = ApprovalStatusChoices.DECLINED
@@ -192,3 +196,6 @@ def decline_appointment(appointment_uuid):
     db.session.commit()
 
     return redirect('/appointment/%s' % (appointment_uuid))
+
+def not_found(error):
+   return render_template("views/404.html"), 404

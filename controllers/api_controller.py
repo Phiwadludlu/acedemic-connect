@@ -6,10 +6,12 @@ from utils.enums import ApprovalStatusChoices,AttendanceChoices
 from flask_login import current_user
 from services.api_service import format_timeslot_data, format_module_data, format_appointments_tile_data, format_timeslot_label_data
 from flask_security import auth_required
+from flask_security.decorators import roles_required
+
 import uuid
 from sqlalchemy import and_
 
-@auth_required()
+@roles_required('student')
 def schedule_appointment():
     req_data = request.data
     form_data = json.loads(req_data)
@@ -36,14 +38,17 @@ def schedule_appointment():
     except:
         return jsonify({"code" : -1}), 500
 
+@roles_required('student')
 def fetch_student_appointments():
     all_appoinments = db.session.query(Appointment, Student, TimeSlot).filter(and_(Appointment.student_id == current_user.student.id, Appointment.timeslot_id == TimeSlot.id, Student.id == current_user.student.id))
     return all_appoinments
 
+@roles_required('lecturer')
 def fetch_lecturer_appointments():
     all_appoinments = db.session.query(Appointment, Student, TimeSlot).filter(and_(Appointment.lecturer_id == current_user.lecturer.id, Appointment.timeslot_id == TimeSlot.id))
     return all_appoinments
- 
+
+@auth_required()
 def get_appointment_by_approval_status():
     req_data = request.data
     form_data = json.loads(req_data)
@@ -52,7 +57,8 @@ def get_appointment_by_approval_status():
         status = form_data['approval_status']
         filtered_appointments = Appointment.query.filter_by(approval_status=status).all()
         return jsonify(filtered_appointments), 200
-        
+
+@roles_required('lecturer')
 def get_appointments_by_lecture_staff_number():
     req_data = request.data
     form_data = json.loads(req_data)
@@ -63,7 +69,7 @@ def get_appointments_by_lecture_staff_number():
         appointments = Appointment.query.filter(Appointment.lecturer_id == lecturer.id)
         return jsonify(appointments), 200
 
-        
+@roles_required('student')
 def get_appointments_by_student_number():
     req_data = request.data
     form_data = json.loads(req_data)
@@ -73,7 +79,8 @@ def get_appointments_by_student_number():
         student = Student.query.filter(Student.student_number == student_number).first()
         appointments = Appointment.query.filter(Appointment.student_id == student.id)
         return jsonify(appointments), 200
-    
+
+@auth_required()
 def get_appointments_by_module_code():
     req_data = request.data
     form_data = json.loads(req_data)
@@ -83,7 +90,8 @@ def get_appointments_by_module_code():
         module_record = Module.query.filter(Module.code == module_code).first()
         appointments = Appointment.query.filter(module_record.id == Appointment.module_id).all()
         return jsonify(appointments), 200
-        
+
+@auth_required()
 def get_appointments_by_attendance_status():
     req_data = request.data
     form_data = json.loads(req_data)
@@ -93,11 +101,12 @@ def get_appointments_by_attendance_status():
         appointments = Appointment.query.filter_by(attendance_status =status).all()
         return jsonify(appointments), 200
     
-
+@auth_required()
 def get_all_modules():
     all_modules = db.session.query(Module).all()
     return format_module_data(all_modules)
 
+@roles_required('lecturer')
 def add_to_my_modules():
     try:
         data = request.data
@@ -119,17 +128,18 @@ def add_to_my_modules():
     except:
         return jsonify({'code' : -2}) # server error 
 
-
+@auth_required()
 def get_single_module_by_module_code(module_code):
     module = Module.query.filter(Module.code==module_code).first()
     return jsonify(module)
-    
+
+@auth_required()
 def get_modules_by_lecture_staff_number(staff_number):
     lecturer = Lecturer.query.filter(Lecturer.staff_number == staff_number).first()
     all_modules = Module.query.filter(Module.lecturer_id == lecturer.id)
     return format_module_data(all_modules)
 
-    
+@auth_required() 
 def get_reschedule_approval_by_student_number():
     req_data = request.data
     form_data = json.load(req_data)
@@ -140,6 +150,7 @@ def get_reschedule_approval_by_student_number():
         student_appointments_needing_approval = Appointment.query.filter(and_(Appointment.student_id == student.id, Appointment.approval_status==ApprovalStatusChoices.PENDING))
         return jsonify(student_appointments_needing_approval), 200
 
+@auth_required()
 def get_reschedule_approval_by_staff_number():
     req_data = request.data
     form_data = json.load(req_data)
@@ -150,6 +161,7 @@ def get_reschedule_approval_by_staff_number():
         lecturer_appointments_needing_approval = Appointment.query.filter(and_(Appointment.lecturer_id == lecturer.id, Appointment.approval_status==ApprovalStatusChoices.PENDING))
         return jsonify(lecturer_appointments_needing_approval), 200
 
+@auth_required()
 def get_timeslot_by_day():
     req_data = request.data
     form_data = json.loads(req_data)
@@ -157,7 +169,8 @@ def get_timeslot_by_day():
     if 'day' in form_data:
         day = form_data['day']
         timeslots = TimeSlot.query.filter(TimeSlot.day == day).all()
-        
+
+@auth_required()
 def get_timeslots_by_staff_number():
     req_data = request.data
     form_data = json.loads(req_data)
@@ -167,11 +180,13 @@ def get_timeslots_by_staff_number():
         lecturer = Lecturer.query.filter(Lecturer.staff_number == staff_number).first()
         timeslots = TimeSlot.query.filter(and_(TimeSlot.lecturer_id == lecturer.id, TimeSlot.is_available == True)).all()
         return format_timeslot_data(timeslots), 200
-    
+
+@auth_required()
 def get_all_timeslots():
     timeslots = TimeSlot.query.all()
     return format_timeslot_data(timeslots), 200
 
+@auth_required()
 def get_timeslots_by_module():
 
     req_data = request.data
@@ -182,7 +197,8 @@ def get_timeslots_by_module():
         module = Module.query.filter(Module.code == module_code).first()
         timeslots = TimeSlot.query.filter(TimeSlot.lecturer_id == module.lecturer_id).all()
         return format_timeslot_label_data(timeslots)
-    
+
+@auth_required()
 def update_timeslots_by_staff_number():
     req_data = request.data
     form_data = json.loads(req_data)
@@ -208,7 +224,8 @@ def update_timeslots_by_staff_number():
             return jsonify({"code": 1})
         else:
             return jsonify({"code":-1}) # not allowed because dont own timeslot
-        
+
+@auth_required()
 def update_appointment_student_attendance():
     req_data = request.data
     form_data = json.loads(req_data)

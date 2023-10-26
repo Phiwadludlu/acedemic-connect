@@ -1,6 +1,7 @@
 import flask_migrate
 import flask_security
 from flask import Flask
+from flask_cors import CORS
 
 from forms.auth_forms.sign_up_form import StudentRegisterForm
 from routes.core_route import core_route
@@ -8,10 +9,12 @@ from models import db,User,Role
 from routes.lecturer_routes import lecturer_route
 from routes.student_routes import student_route
 from routes.api_route import api_route
+from controllers import core_controller as cl
 
 
 def create_app():
     app = Flask(__name__)
+    cors = CORS(app)
     app.config.from_object('config')
 
     return app
@@ -21,6 +24,10 @@ def create_app():
 app = create_app()
 db.init_app(app)
 flask_migrate.Migrate(app=app, db=db)
+
+@app.errorhandler(404)
+def handle_not_found(e):
+    return cl.not_found(e)
 
 
 #Authentication config

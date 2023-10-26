@@ -26,7 +26,8 @@ def index():
         return render_template("views/lecturer/partial/Pending.html", pending_appointments=api_s.format_appointments_tile_data(pending_appointments))
     else:
         return redirect('/lecturer?tag=Upcoming')
-    
+
+@roles_required('lecturer')
 def my_timeslots():
     return render_template("views/lecturer/TimeAvailable.html", current_user=current_user)
 
