@@ -74,7 +74,9 @@
                     {{ appointment.appointment_reason }}
                 </p>
             </div>
-            {% if appointment.attendance_status != 'Pending' %}
+            {% if (appointment.approval_status=='Pending' and current_user.roles[0].name == 'student') or
+            (appointment.is_reschedule==True and current_user.roles[0].name == 'lecturer' and
+            appointment.approval_status=='Pending') or (appointment.approval_status!='Pending') %}
             <div class="row">
                 <p class="fw-medium">
                     Approval Status
@@ -83,24 +85,14 @@
                     {{ appointment.approval_status }}
                 </p>
             </div>
+            {% endif %}
+            {% if appointment.attendance_status != 'Pending' %}
             <div class="row">
                 <p class="fw-medium">
                     Student Attendance Status
                 </p>
                 <p class="fw-lighter">
                     {{ appointment.attendance_status }}
-                </p>
-            </div>
-            {% endif %}
-            {% if (appointment.approval_status=='Pending' and current_user.roles[0].name == 'student') or
-            (appointment.is_reschedule==True and current_user.roles[0].name == 'lecturer' and
-            appointment.approval_status=='Pending') %}
-            <div class="row">
-                <p class="fw-medium">
-                    Approval Status
-                </p>
-                <p class="fw-lighter">
-                    {{ appointment.approval_status }}
                 </p>
             </div>
             {% endif %}

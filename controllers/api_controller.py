@@ -195,7 +195,7 @@ def get_timeslots_by_module():
     if 'module_code' in form_data:
         module_code = form_data['module_code']
         module = Module.query.filter(Module.code == module_code).first()
-        timeslots = TimeSlot.query.filter(TimeSlot.lecturer_id == module.lecturer_id).all()
+        timeslots = TimeSlot.query.filter(and_(TimeSlot.lecturer_id == module.lecturer_id, TimeSlot.is_available == True)).all()
         return format_timeslot_label_data(timeslots)
 
 @auth_required()

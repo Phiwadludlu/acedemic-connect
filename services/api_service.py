@@ -108,6 +108,7 @@ def format_single_appointment_data(data):
             "appointment_reason" : appointment.appointment_reason,
             "approval_status" : appointment.approval_status.value,
             "is_reschedule" : appointment.is_reschedule,
+            "date": appointment.date.strftime("%A, %B %d, %Y"),
             "attendance_status" : appointment.attendance_status.value,
             "old_timeslot" : old_timeslot.start_time.isoformat(timespec='minutes') + "-" + old_timeslot.end_time.isoformat(timespec='minutes') if old_timeslot else '',
         }

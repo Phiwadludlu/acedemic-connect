@@ -142,13 +142,18 @@ def single_appointment(appointment_uuid):
 @roles_required('lecturer')
 def reschedule_appointment(appointment_uuid):
     if request.method == "GET":
-        appointment = db.session.query(Appointment, Module, Student, TimeSlot).filter(and_(Appointment.module_id == Module.id, Student.id == Appointment.student_id, Appointment.timeslot_id == TimeSlot.id, Appointment.appointment_uuid == appointment_uuid)).first()
+        appointment = db.session.query(Appointment, Module, Student, TimeSlot, None).filter(and_(Appointment.module_id == Module.id, Student.id == Appointment.student_id, Appointment.timeslot_id == TimeSlot.id, Appointment.appointment_uuid == appointment_uuid)).first()
         return render_template("views/RescheduleAppointment.html", appointment=api_s.format_single_appointment_data(appointment))
     if request.method == "POST":
         try:
             appointment_record = Appointment.query.filter(Appointment.appointment_uuid == appointment_uuid).first()
+            timeslot = TimeSlot.query.filter(TimeSlot.id == appointment_record.timeslot_id).first()
+            
             appointment_record.approval_status = ApprovalStatusChoices.RESCHEDULED
             appointment_record.attendance_status = AttendanceChoices.RESCHEDULED
+            timeslot.is_available = True
+
+            db.session.add(timeslot)
             db.session.add(appointment_record)
             db.session.flush()
 
