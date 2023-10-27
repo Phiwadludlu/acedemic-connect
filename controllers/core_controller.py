@@ -1,5 +1,9 @@
 
 """The controllers module is for business logic"""
+import os
+from flask import request, render_template, flash, redirect, url_for, session, jsonify
+from flask_security import hash_password, anonymous_user_required, auth_required
+from flask_security.confirmable import generate_confirmation_token, generate_confirmation_link
 from flask import request, render_template, flash, redirect, url_for, session, jsonify
 from flask_security import hash_password, anonymous_user_required, auth_required
 from flask_security.decorators import roles_required
@@ -12,6 +16,8 @@ from flask_login import current_user
 from services import api_service as api_s
 from services.populate_moduletable import run as populate_module_run
 from sqlalchemy import and_
+from itsdangerous import URLSafeTimedSerializer
+from services.auth_service import AuthService
 import uuid
 import json
 from datetime import datetime
@@ -45,7 +51,7 @@ def lecturer_sign_up():
 
             # Add user to DB logic here
             new_user = User(email=register_lecturer_form.email.data,
-                            password=hash_password(register_lecturer_form.password.data), active=True)
+                            password=hash_password(register_lecturer_form.password.data), active=False)
             new_user.fs_uniquifier = new_user.get_auth_token()
             new_user.is_active = True
             new_user.roles.append(lecturer_role)
@@ -55,8 +61,9 @@ def lecturer_sign_up():
             db.session.add(new_user)
             db.session.add(new_lecturer)
             db.session.commit()
-
-            flash("Account created successfully", category="info")
+            auth_service =AuthService()
+            auth_service.send_confimation_link(new_user)
+            flash("A confimation email has been sent to your email", category="info")
 
             return redirect(url_for("security.login"))
 
@@ -74,7 +81,7 @@ def student_sign_up():
 
             # Add user to DB logic here
             new_user = User(email=register_student_form.email.data,
-                            password=hash_password(register_student_form.password.data), active=True)
+                            password=hash_password(register_student_form.password.data), active=False)
             new_user.fs_uniquifier = new_user.get_auth_token()
             new_user.is_active = True
             new_user.roles.append(student_role)
@@ -88,7 +95,11 @@ def student_sign_up():
             db.session.add(new_student)
             db.session.commit()
 
-            flash("Account created successfully", category="info")
+            auth_service =AuthService()
+            auth_service.send_confimation_link(new_user)
+            
+            
+            flash("A confimation email has been sent to your account", category="info")
 
             return redirect(url_for("security.login"))
 
@@ -207,9 +218,64 @@ def decline_appointment(appointment_uuid):
 
     db.session.add(timeslot)
     db.session.add(appointment)
+    db.session.flush()
+
+    all_pending_appointments_with_same_timeslot = Appointment.query.filter(and_(Appointment.timeslot_id == appointment.timeslot_id,Appointment.id != appointment.id)).all()
+
+    for record in all_pending_appointments_with_same_timeslot:
+        record.approval_status = ApprovalStatusChoices.DECLINED
+        record.attendance_status = AttendanceChoices.DECLINED
+        db.session.add(record)
+
+    db.session.commit()
+
+    return redirect('/appointment/%s' % (appointment_uuid))
+
+@auth_required()
+def decline_appointment(appointment_uuid):
+    appointment = Appointment.query.filter(Appointment.appointment_uuid == appointment_uuid).first()
+    appointment.approval_status = ApprovalStatusChoices.DECLINED
+    appointment.attendance_status = AttendanceChoices.DECLINED
+    
+    timeslot = TimeSlot.query.filter(TimeSlot.id == appointment.timeslot_id).first()
+    timeslot.is_available = True
+
+    db.session.add(timeslot)
+    db.session.add(appointment)
     db.session.commit()
 
     return redirect('/appointment/%s' % (appointment_uuid))
 
 def not_found(error):
    return render_template("views/404.html"), 404
+
+
+
+
+def confirm_account():
+
+    auth_service = AuthService()
+    token = request.args.get('token')
+
+    #confirm token
+    fs_uniquifier = auth_service.decode_token(token=token)
+
+    if fs_uniquifier !=None:
+
+        user = User.query.filter_by(fs_uniquifier=fs_uniquifier).first_or_404()
+
+        user.active = True
+
+        db.session.commit()
+
+        flash("Account successfully confirmed", category="info")
+        return redirect(url_for("security.login"))
+    
+    flash("Invalid or expired token", category="error")
+    return redirect(url_for("security.login"))
+
+
+
+
+
+

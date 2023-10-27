@@ -24,3 +24,5 @@ core_route.add_url_rule("/appointment/<appointment_uuid>","single_appointment", 
 core_route.add_url_rule("/appointment/<appointment_uuid>/reschedule","reschedule_appointment", core.reschedule_appointment, methods=["GET","POST"])
 core_route.add_url_rule("/appointment/approve/<appointment_uuid>","approve_appointment", core.approve_appointment, methods=["GET"])
 core_route.add_url_rule("/appointment/decline/<appointment_uuid>","decline_appointment", core.decline_appointment, methods=["GET"])
+
+core_route.add_url_rule("/confirm", "confirm_account", core.confirm_account, methods=['GET'])
