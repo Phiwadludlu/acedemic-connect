@@ -13,7 +13,7 @@
                 class="container-fluid {% if variant == 'default' %} me-5 {% endif %}d-flex justify-content-md-start justify-content-center">
                 <div class="d-grid gap-1">
                     <a class="fs-3 fw-normal link-underline link-underline-opacity-0" href="./"
-                        style="color:rgb(8,95,99)">Academic Connect</a>
+                        style="color:rgb(8,95,99)">AcademiConnect</a>
                     <div class="d-md-none d-flex justify-content-center w-100">
                         <div class="border border-secondary border-1 w-50"></div>
                     </div>
@@ -63,16 +63,7 @@
             </div>
             {% if variant != 'default' %}
             <div class="d-flex justify-content-end">
-                <a class="btn border border-0 position-relative" role="button" href="{{url_for('core_routes.notifications')}}"
-                    aria-label="Notifications">
-                    <span class="material-symbols-outlined">
-                        notifications
-                    </span>
-                    <span
-                        class="position-absolute top-10 start-90 translate-middle p-2 bg-danger border border-light rounded-circle">
-                        <span class="visually-hidden">New alerts</span>
-                    </span>
-                </a>
+                
             </div>
             {% endif %}
         </div>
