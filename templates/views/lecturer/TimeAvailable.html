@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %} | Timeslots {% endblock title %}
+<!--TODO-->
+
+{% block content %}
+<div class="toast-container p-3 bottom-0 end-0" id="toast-area"></div>
+<div class="container-lg">
+    <div class="d-flex flex-row pt-2">
+        <a href="{{ url_for('core_routes.proxy_redirect') }}" role="button"
+            class="btn bg-transparent rounded border border-0">
+            <span class="material-symbols-outlined">
+                arrow_back_ios_new
+            </span>
+        </a>
+        <div class="col d-block ps-4 ms-4">
+            <p class="fs-3 fw-medium mb-0 text-center">
+                My Timeslots
+            </p>
+            <div class="d-md-none d-flex justify-content-center w-100">
+                <div class="border border-secondary border-1 w-50 mt-1"></div>
+            </div>
+        </div>
+        <button role="button" id="saveTimeslots"
+            class="btn d-flex align-items-center border border-0 justify-content-center bg-light-subtle border border-1"
+            style="width: 125px;"><span class="material-symbols-outlined">save</span>Save</button>
+    </div>
+    <div class="container mt-3" style="height: 100vh;">
+        <schedule-component ref="sc" :staff_number="'{{current_user.lecturer.staff_number}}'"></schedule-component>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="/static/custom.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    const saveTimeslots = document.getElementById("saveTimeslots");
+
+    saveTimeslots.addEventListener('click', () => {
+        const days = app._instance.refs.sc.days;
+        const staged_for_removal = app._instance.refs.sc.removalStaging;
+        const staff_number = app._instance.refs.sc.staff_number;
+
+        console.log({ days, staged_for_removal, staff_number });
+
+        const appendAlert = (message, type) => {
+            const wrapper = document.querySelector("div#toast-area");
+            wrapper.innerHTML = [
+                `<div class="toast align-items-center bg-${type} text-white position-relative border-0"
+                role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>`
+            ].join('');
+        };
+
+        if (days && staff_number) {
+            const endpoint = "/v1/api/update_timeslots_by_staff_number";
+            const requestOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ days, staged_for_removal, staff_number })
+            };
+
+            fetch(endpoint, requestOptions)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.code === -1) {
+                        appendAlert(`Something went wrong. Try again later.`, 'warning');
+                        const toastItem = document.querySelector("div.toast");
+                        if (toastItem) {
+                            const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastItem);
+                            toastBootstrap.show()
+                        };
+                    } else if (data.code === 1) {
+                        window.location.assign("/lecturer?tag=Upcoming")
+                    }
+                })
+                .catch(error => {
+                    console.error('There was a problem', error);
+                    appendAlert(`Something went wrong. Try again later.`, 'warning');
+                    const toastItem = document.querySelector("div.toast");
+                    if (toastItem) {
+                        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastItem);
+                        toastBootstrap.show()
+                    };
+                });
+        } else {
+            appendAlert(`Nothing to update.`, 'info');
+            const toastItem = document.querySelector("div.toast");
+            if (toastItem) {
+                const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastItem);
+                toastBootstrap.show()
+            };
+        }
+    });
+
+</script>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% import "macros/__moduletable__.html" as moduletable %}
+
+{% block title %}
+| Add New Module
+{% endblock %}
+
+{% block content %}
+<div class="toast-container p-3 bottom-0 end-0" id="toast-area"></div>
+<div class="container-lg h-100">
+    <div id="alert-section"></div>
+    <div class="d-flex flex-row">
+        <a href="/lecturer/manage" role="button" class="btn bg-transparent rounded border border-0">
+            <span class="material-symbols-outlined">
+                arrow_back_ios_new
+            </span>
+        </a>
+        <div class="col d-block pe-3 me-3">
+            <p class="fs-3 fw-medium mb-0 text-center text-success">
+                Add to My Module
+            </p>
+            <div class="d-md-none d-flex justify-content-center w-100">
+                <div class="border border-secondary border-1 w-50"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid mt-2">
+        <div class="d-flex flex-column">
+            <div class="mb-3">
+                <p class="fs-5 fw-medium text-success">Module</p>
+                <multiselect ref="ms" :search-field-id="'multiselect-searchfield'" :dropdown-id="'dropdown-items'"
+                :items="moduleItems" :checkbox-type="'checkbox'" :limit="25" :return-type="'module-selection'"
+                :action="'module-filter'" @selected-module="updateSelectedModule" @open-dropdown="updateOpenDropdown"
+                :is-dropdown-open="isDropdownOpen"></multiselect>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center mt-4">
+            <button role="button" id="add-module"
+                class="btn btn-outline-success rounded border border-1 d-flex align-items-center justify-content-center">
+                <span class="material-symbols-outlined">add</span>
+                Add to my modules
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="/static/custom.js" type="text/javascript"></script>
+<script>
+    const saveEdit = document.getElementById("add-module");
+    const multiselectComponent = app._instance.refs.ms;
+
+    saveEdit.addEventListener('click', async () => {
+        const addingModule = multiselectComponent.currentTags;
+
+        const res = await fetch('/v1/api/add_to_my_modules', {
+            mode: 'cors',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({all_modules : addingModule})
+        }).then(result => result.json());
+
+        if (res.code == 1){
+            window.location.assign('/lecturer/manage');
+        } else if (res.code == -1) {
+            alert("Someone else already teaches this module.");
+        } else {
+            alert("Something went wrong. Please try again later.");
+        }
+        
+    });
+</script>
+{% endblock %}

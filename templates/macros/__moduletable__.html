@@ -1,0 +1,39 @@
+{% macro self(data=[], allow_edit=False) -%}
+{% if data %}
+<table class="table table-striped table-success">
+    <thead>
+        <tr>
+            <th scope="col">Module Code</th>
+            <th scope="col">Module Name</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        {% for item in data %}
+        <tr>
+            <th scope="row">{{ item.code }}</th>
+            <td>{{ item.name }}</td>
+            <td>
+                {% if allow_edit == True %}
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="manage/remove?module={{ item.code }}" class="d-flex align-items-center link-dark gap-2 link-underline link-underline-opacity-0">
+                        <span class="material-symbols-outlined"> remove </span>
+                        Remove
+                    </a>
+                {% endif %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="d-flex flex column align-items-center h-100">
+    <div class="container d-flex justify-content-center ">
+        <p class="fs-3 fw-medium text-secondary">
+            No items.
+        </p>
+    </div>
+</div>
+{% endif %}
+{%- endmacro %}

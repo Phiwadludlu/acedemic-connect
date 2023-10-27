@@ -30,7 +30,7 @@ const app = Vue.createApp({
             }
         },
     },
-    created () {
+    created() {
         this.fetchModuleItems();
     }
 });
@@ -80,7 +80,7 @@ app.component('multiselect', {
                 this.$emit('open-dropdown', false);
             }
         },
-        clearSearchText(){
+        clearSearchText() {
             this.searchText = '';
         },
         debounceInput(id) {
@@ -137,7 +137,7 @@ app.component('sessionpicker', {
         return {
             selectedDay: "",
             selectedTime: "",
-            timeslots : [],
+            timeslots: [],
         };
     },
     methods: {
@@ -171,7 +171,7 @@ app.component('sessionpicker', {
         selectedDay(newValue, oldValue) {
             console.log(this.selectedDay);
             console.log(this.module);
-            if (this.timeslots.length === 0){
+            if (this.timeslots.length === 0) {
                 this.fetchTimeslots();
             }
         },
@@ -195,5 +195,115 @@ app.component('sessionpicker', {
         },
     },
 });
+
+app.component('schedule-component', {
+    template: `
+        <div class="d-flex flex-column gap-2">
+            <div class="row">
+                <label class="form-label ps-0" for="dayOfWeek">Day</label>
+                <select class="form-select" id="dayOfWeek" v-model="selectedDay" aria-label="Default select example">
+                    <option selected>Choose a day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                </select>
+            </div>
+            <table class="table" v-if="filteredDays.length">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Start time</th>
+                        <th scope="col">End time</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody v-for="(day, index) in filteredDays" :key="'day' + index">
+                    <tr v-for="(timeslot, i) in day.timeslots" :key="'timeslot' + i">
+                        <th scope="row">{{ i + 1 }}</th>
+                        <td><input class="form-control" type="time" v-model="timeslot.start_time" /></td>
+                        <td><input class="form-control" type="time" v-model="timeslot.end_time" /></td>
+                        <td><span class="mt-2 material-symbols-outlined" style="cursor: pointer;" @click="removeRow(i, timeslot.timeslot_id)">remove</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="row d-flex align-items-center justify-content-end">
+                <button v-if="selectedDay !== 'Choose a day'" role="button" style="width: 125px;" id="add-row"
+                    class="btn d-flex align-items-center justify-content-center bg-light-subtle border border-1"
+                    @click.prevent="addRow()">
+                    <span class="material-symbols-outlined">add</span>Add row
+                </button>
+            </div>
+        </div>`,
+    setup() {
+        const sc = Vue.ref(null);
+        return {
+            sc
+        }
+    },
+    props: {
+        staff_number: {
+            type: String,
+            default: '',
+        }
+    },
+    data() {
+        return {
+            days: [],
+            selectedDay: 'Choose a day',
+            removalStaging: [],
+        }
+    },
+    computed: {
+        filteredDays() {
+            if (!this.selectedDay) return [];
+            return this.days.filter(day => day.day === this.selectedDay);
+        }
+    },
+    methods: {
+        addRow() {
+            console.log(this.selectedDay);
+            const index = this.days.findIndex(item => item === this.days.filter(item => item.day === this.selectedDay)[0]);
+            console.log(index);
+            if (index === -1) {
+                this.days.push({
+                    day: this.selectedDay,
+                    timeslots: [{timeslot_id : "", start_time: '', end_time: '' }]
+                });
+            } else {
+                this.days[index].timeslots.push({timeslot_id : "", start_time: '', end_time: '' });
+            }
+        },
+        removeRow(timeslotIndex, timeslotId) {
+            const dayIndex = this.days.findIndex(item => item === this.days.filter(item => item.day === this.selectedDay)[0]);
+            this.days[dayIndex].timeslots.splice(timeslotIndex, 1);
+            this.removalStaging.push(timeslotId);
+        },
+        async fetchTimeslots() {
+            try {
+                // Replace with your actual API endpoint for moduleItems
+                const response = await fetch('/v1/api/get_timeslots_by_staff_number', {
+                    mode: 'cors',
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        staff_number: this.staff_number
+                    })
+                });
+                const timeslotsData = await response.json();
+                this.days = timeslotsData;
+            } catch (error) {
+                console.error('Error fetching timeslotsData:', error);
+            }
+        }
+    },
+    mounted() {
+        this.fetchTimeslots()
+    }
+});
+
 
 const vm = app.mount('#app');

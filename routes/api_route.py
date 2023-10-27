@@ -6,6 +6,7 @@ from controllers import api_controller as api_ctrl
 api_route = Blueprint('api_routes',__name__)
 
 api_route.add_url_rule('/schedule_appointment', 'schedule_appointment',api_ctrl.schedule_appointment, methods=['POST'])
+api_route.add_url_rule('/add_to_my_modules', 'add_to_my_modules',api_ctrl.add_to_my_modules, methods=['POST'])
 api_route.add_url_rule('/get_all_modules', 'fetch_modules',api_ctrl.get_all_modules, methods=['GET'])
 api_route.add_url_rule('/get_timeslots_by_module', 'fetch_timeslots_by_module',api_ctrl.get_timeslots_by_module, methods=['POST'])
 api_route.add_url_rule('/get_appointment_by_approval_status', 'get_appoinment_by_approval_status',api_ctrl.get_appointment_by_approval_status, methods=['POST'])
@@ -18,5 +19,7 @@ api_route.add_url_rule('/get_modules_by_lecture_staff_number', 'get_modules_by_l
 api_route.add_url_rule('/get_reschedule_approval_by_student_number', 'get_reschedule_approval_by_student_number',api_ctrl.get_reschedule_approval_by_student_number, methods=['POST'])
 api_route.add_url_rule('/get_reschedule_approval_by_staff_number', 'get_reschedule_approval_by_staff_number',api_ctrl.get_reschedule_approval_by_staff_number, methods=['POST'])
 api_route.add_url_rule('/get_timeslot_by_day', 'get_timeslot_by_day',api_ctrl.get_timeslot_by_day, methods=['POST'])
-api_route.add_url_rule('/get_timeslot_by_staff_number', 'get_timeslot_by_staff_number', api_ctrl.get_timeslot_by_staff_number, methods=['POST'])
-api_route.add_url_rule('/get_all_timeslots', 'get_all_timeslots',api_ctrl.get_all_timeslots, methods=['POST'])
+api_route.add_url_rule('/get_timeslots_by_staff_number', 'get_timeslots_by_staff_number', api_ctrl.get_timeslots_by_staff_number, methods=['POST'])
+api_route.add_url_rule('/get_timeslots_by_staff_number', 'get_timeslots_by_staff_number', api_ctrl.get_timeslots_by_staff_number, methods=['POST'])
+api_route.add_url_rule('/update_timeslots_by_staff_number', 'update_timeslots_by_staff_number',api_ctrl.update_timeslots_by_staff_number, methods=['POST'])
+api_route.add_url_rule('/update_appointment_student_attendance', 'update_appointment_student_attendance',api_ctrl.update_appointment_student_attendance, methods=['POST'])

@@ -2,6 +2,7 @@ import flask_migrate
 import flask_security
 from flask import Flask
 from flask_mailman import EmailMultiAlternatives, Mail
+from flask_cors import CORS
 
 from forms.auth_forms.sign_up_form import StudentRegisterForm
 from routes.core_route import core_route
@@ -13,10 +14,12 @@ from utils.celery.celery import celery_init_app
 
 from utils.celery.flask_mail import MyMailUtil, mail 
 
+from controllers import core_controller as cl
 
 
 def create_app():
     app = Flask(__name__)
+    cors = CORS(app)
     app.config.from_object('config')
 
     return app
@@ -28,6 +31,10 @@ db.init_app(app)
 celery = celery_init_app(app)
 mail.init_app(app)
 flask_migrate.Migrate(app=app, db=db)
+
+@app.errorhandler(404)
+def handle_not_found(e):
+    return cl.not_found(e)
 
 
 #Authentication config
