@@ -21,7 +21,7 @@ FLASK_APP = "app"
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 #Database config
-SQLALCHEMY_DATABASE_URI = 'sqlite:///project.db'
+SQLALCHEMY_DATABASE_URI = 'postgresql://admin_root:mw3SUugcexD929H@academicconnect.postgres.database.azure.com:5432/postgres'
 SQLALCHEMY_ENGINE_OPTIONS =  {
     "pool_pre_ping": True,
 }

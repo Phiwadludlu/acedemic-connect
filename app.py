@@ -28,7 +28,7 @@ def create_app():
 #Flask App instane
 app = create_app()
 db.init_app(app)
-celery = celery_init_app(app)
+
 mail.init_app(app)
 flask_migrate.Migrate(app=app, db=db)
 
