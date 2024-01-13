@@ -260,19 +260,22 @@ def confirm_account():
     #confirm token
     fs_uniquifier = auth_service.decode_token(token=token)
 
-    if fs_uniquifier !=None:
+    if request.method=="POST":
+        if fs_uniquifier !=None:
 
-        user = User.query.filter_by(fs_uniquifier=fs_uniquifier).first_or_404()
+            user = User.query.filter_by(fs_uniquifier=fs_uniquifier).first_or_404()
 
-        user.active = True
+            user.active = True
 
-        db.session.commit()
+            db.session.commit()
 
-        flash("Account successfully confirmed", category="info")
+            flash("Account successfully confirmed", category="info")
+            return redirect(url_for("security.login"))
+    
+        flash("Invalid or expired token", category="error")
         return redirect(url_for("security.login"))
     
-    flash("Invalid or expired token", category="error")
-    return redirect(url_for("security.login"))
+    return render_template("views/confirm_password.html")
 
 
 
